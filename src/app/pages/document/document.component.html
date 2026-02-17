@@ -1,0 +1,82 @@
+<toast-messages/>
+<p-fluid [formGroup]="searchForm">
+    <div class="card flex flex-col gap-4">
+        <div class="flex justify-between">
+            <div class="font-semibold text-xl">Search</div>
+            <p-button label="Create Document" (onClick)="onCreate()" [fluid]="false"></p-button>
+        </div>
+
+        <div class="grid grid-cols-12 ml-10">
+            <label class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Status</label>
+            <div class="col-span-12 md:col-span-4">
+                <app-document-status-filter formControlName="status"/>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 ml-10">
+            <label class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Employee</label>
+            <div class="col-span-12 md:col-span-4">
+                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Employee'" formControlName="employee"/>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 ml-10">
+            <label class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">DateTill</label>
+            <div class="col-span-12 md:col-span-4">
+                <div class="flex align-items-center gap-3">
+                    <app-month-year-filter type="month" formControlName="month"/>
+                    <app-month-year-filter type="year" formControlName="year"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-start mt-10">
+            <p-button label="Search" [loading]="loading" (onClick)="onSearch()" [fluid]="false"></p-button>
+        </div>
+    </div>
+
+    <div class="card mt-4" *ngIf="documentList.length > 0">
+        <p-table
+                [value]="documentList"
+                [paginator]="true"
+                [rows]="10"
+                [loading]="loading"
+                responsiveLayout="scroll"
+                styleClass="p-datatable-striped">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>No.</th>
+                    <th>Employee Code</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th style="width: 5rem"></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-doc let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ doc.employeeCode }}</td>
+                    <td>{{ doc.employeeName }}</td>
+                    <td>{{ doc.documentDate }}</td>
+                    <td>
+                        <span [class]="'status-badge status-' + doc.status">
+                            {{ doc.statusLabel }}
+                        </span>
+                    </td>
+                    <td>
+                        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary"></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center">No documents found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</p-fluid>

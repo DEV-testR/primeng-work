@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+@use './assets/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use './assets/demo/demo.scss';
+
+
+// สำหรับ AutoComplete
+.p-autocomplete.ng-invalid.ng-dirty .p-inputtext {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
+
+// สำหรับ Select / Dropdown
+.p-dropdown.ng-invalid.ng-dirty,
+.p-select.ng-invalid.ng-dirty {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}

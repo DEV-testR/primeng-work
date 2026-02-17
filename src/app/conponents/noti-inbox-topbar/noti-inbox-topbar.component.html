@@ -1,0 +1,24 @@
+<button type="button" (click)="toggle($event)" class="layout-topbar-action">
+    <p-overlaybadge severity="danger">
+        <i class="pi pi-bell"></i>
+    </p-overlaybadge>
+    <span>Messages</span>
+</button>
+<p-popover #op [style]="{ 'border-radius': '1rem' }">
+    <div class="card w-max max-w-[80vw] md:max-w-[20vw] max-h-[70vh] overflow-auto layout-topbar-menu">
+        <div class="flex items-center justify-between mb-6">
+            <div class="font-semibold text-xl">Notifications</div>
+        </div>
+        <ng-container *ngFor="let item of items">
+            <span class="block text-muted-color font-medium mb-4">{{ item.date }}</span>
+            <ul class="p-0 mx-0 mt-0 mb-6 list-none">
+                <li *ngFor="let r of item.detailList" class="flex items-center p-2 border-b border-surface hover:bg-emphasis cursor-pointer rounded-border">
+                    <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
+                        <i class="pi pi-bookmark !text-xl text-blue-500"></i>
+                    </div>
+                    <span class="text-surface-900 dark:text-surface-0 leading-normal">{{ r.subject }}</span>
+                </li>
+            </ul>
+        </ng-container>
+    </div>
+</p-popover>

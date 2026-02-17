@@ -1,0 +1,59 @@
+<div class="p-d-flex p-jc-center p-ai-center profile-container">
+    <p-card header="User Profile" [style]="{ width: '400px' }">
+
+        <div class="flex flex-column align-items-center mb-3">
+            <img ngSrc="{{ user.profilePicUrl }}" alt="Profile Picture" class="profile-avatar mb-3" width="32" height="32">
+            <h3 class="mt-0 mb-1">{{ user.name }}</h3>
+            <span class="text-500">{{ user.email }}</span>
+        </div>
+
+        <div *ngIf="!isEditing" class="flex flex-column gap-3">
+            <div class="field">
+                <label class="font-bold">Bio</label>
+                <p class="m-0">{{ user.bio }}</p>
+            </div>
+            <div class="field">
+                <label class="font-bold">Member Since</label>
+                <p class="m-0">{{ user.joinDate | date:'mediumDate' }}</p>
+            </div>
+        </div>
+
+        <div *ngIf="isEditing" class="flex flex-column gap-3">
+            <div class="field flex flex-column gap-2">
+                <label for="name">Name</label>
+                <input id="name" type="text" pInputText [(ngModel)]="user.name" />
+            </div>
+
+            <div class="field flex flex-column gap-2">
+                <label for="bio">Bio</label>
+                <textarea id="bio" pInputTextarea rows="3" [(ngModel)]="user.bio"></textarea>
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <div class="flex justify-content-end gap-2">
+                <p-button
+                        *ngIf="!isEditing"
+                        label="Edit Profile"
+                        icon="pi pi-pencil"
+                        (onClick)="toggleEdit()">
+                </p-button>
+
+                <p-button
+                        *ngIf="isEditing"
+                        label="Save"
+                        icon="pi pi-check"
+                        (onClick)="saveProfile()">
+                </p-button>
+                <p-button
+                        *ngIf="isEditing"
+                        label="Cancel"
+                        icon="pi pi-times"
+                        styleClass="p-button-secondary"
+                        (onClick)="toggleEdit()">
+                </p-button>
+            </div>
+        </ng-template>
+
+    </p-card>
+</div>
