@@ -31,7 +31,7 @@
         </div>
 
         <div class="flex justify-start mt-10">
-            <p-button label="Search" [loading]="loading" (onClick)="onSearch()" [fluid]="false"></p-button>
+            <p-button label="Search" [loading]="loading" (onClick)="onSearch()" [disabled]="searchForm.invalid" [fluid]="false"></p-button>
         </div>
     </div>
 

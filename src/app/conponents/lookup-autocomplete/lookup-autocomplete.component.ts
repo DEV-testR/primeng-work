@@ -5,14 +5,20 @@ import {LookupService} from "../../services/lookup.service";
 import {LookupResponse} from "../../models/lookupResponse.model";
 
 interface lookupItem {
+    id: string;
+    code: string;
+    name: string;
+}
+
+interface autoCompleteItem {
     label: string;
     value: string;
 }
 
-interface AutoCompleteCompleteEvent {
+/*interface AutoCompleteCompleteEvent {
     originalEvent: Event;
     query: string;
-}
+}*/
 
 @Component({
     selector: 'app-lookup-autocomplete',
@@ -28,6 +34,7 @@ interface AutoCompleteCompleteEvent {
     template: `
         <div class="flex flex-col gap-1 w-full">
             <p-autocomplete [(ngModel)]="selectedItem"
+                            [disabled]="disabled"
                             [virtualScroll]="true"
                             [suggestions]="filteredItems"
                             [virtualScrollItemSize]="34"
@@ -58,9 +65,11 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     @Input() isValidateFailed: boolean | undefined;
     @ViewChild(AutoComplete) autoComplete!: AutoComplete;
 
-    items: lookupItem[] = [];
-    filteredItems: lookupItem[] = [];
-    selectedItem: lookupItem | undefined;
+    // items: lookupItem[] = [];
+    sourceItems: lookupItem[] = [];
+    filteredItems: autoCompleteItem[] = [];
+    selectedItem: autoCompleteItem | undefined;
+    disabled: boolean = false;
     private pendingValue: any;
     private isSelecting = false;
 
@@ -75,12 +84,22 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
         }
     }
 
+    setDisabledState(isDisabled: boolean): void {
+        this.disabled = isDisabled;
+    }
+
     private loadLookupData(): void {
         this.lookupService.fetchDataLookup(this.clazzName).subscribe({
             next: (res: LookupResponse[]) => {
-                this.items = res.map(item => ({
+                /*this.items = res.map(item => ({
                     label: `${item.code} : ${item.name}`,
                     value: item.id
+                }));*/
+
+                this.sourceItems = res.map(item => ({
+                    id: item.id,
+                    code: item.code,
+                    name: item.name,
                 }));
 
                 if (this.pendingValue) {
@@ -92,13 +111,27 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     }
 
     writeValue(val: any): void {
-        if (val) {
-            if (this.items.length > 0) {
-                this.selectedItem = this.items.find(i => i.value === val);
-                this.pendingValue = null;
-            } else {
-                this.pendingValue = val;
-            }
+        if (!val) {
+            this.selectedItem = undefined;
+            this.pendingValue = null;
+            return;
+        }
+
+        if (this.sourceItems.length === 0) {
+            this.pendingValue = val;
+            this.selectedItem = undefined;
+            return;
+        }
+
+        const targetId: string = val.id ? val.id : val;
+        const foundItem: lookupItem | undefined = this.sourceItems.find(i => String(i.id) === String(targetId));
+
+        if (foundItem) {
+            this.selectedItem = {
+                label: `${foundItem.code} : ${foundItem.name}`,
+                value: foundItem.id
+            };
+            this.pendingValue = null;
         } else {
             this.selectedItem = undefined;
         }
@@ -106,10 +139,12 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
 
     onItemSelect(event: any) {
         this.isSelecting = true;
-        const value = event.value.value;
+        const selected = event.value;
+        const value : string = selected.value;
         this.writeValue(value);
-        this.onChange(value);
 
+        const outValue = this.sourceItems.find(item => item.id === value);
+        this.onChange(outValue);
         if (this.autoComplete) {
             this.autoComplete.hide();
         }
@@ -122,14 +157,20 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     }
 
     showAllItems(event: any) {
-        // ถ้ากำลังอยู่ในขั้นตอนเลือก item หรือมีการเลือกไปแล้ว ไม่ต้องโชว์ซ้ำ
+        if (this.isSelecting || this.disabled) {
+            return;
+        }
+
         if (this.isSelecting) {
             this.isSelecting = false; // reset flag
             return;
         }
 
         console.log('showAllItems', event);
-        this.filteredItems = [...this.items];
+        this.filteredItems = [...this.sourceItems].map(item => ({
+            label: `${item.code} : ${item.name}`,
+            value: item.id
+        }));
 
         setTimeout(() => {
             if (this.autoComplete && !this.selectedItem) { // เพิ่มเช็กถ้ามีค่าอยู่แล้วอาจจะไม่ต้องโชว์
@@ -142,12 +183,19 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
         console.log('filterItems....');
         const query = (event.query || '').toLowerCase();
         if (!query) {
-            this.filteredItems = [...this.items];
+            this.filteredItems = [...this.sourceItems].map(item => ({
+                label: `${item.code} : ${item.name}`,
+                value: item.id
+            }));
         } else {
-            this.filteredItems = this.items.filter(item =>
-                item.label.toLowerCase().includes(query) ||
-                String(item.value).toLowerCase().includes(query)
-            );
+            this.filteredItems = this.sourceItems.filter(item =>
+                item.code.toLowerCase().includes(query) ||
+                item.name.toLowerCase().includes(query)
+                // String(item.value).toLowerCase().includes(query)
+            ).map(item => ({
+                label: `${item.code} : ${item.name}`,
+                value: item.id
+            }));
         }
     }
 

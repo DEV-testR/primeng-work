@@ -14,21 +14,21 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Date Work *</label>
             <div class="col-span-12 md:col-span-6">
-                <p-datepicker formControlName="dateWork" [showIcon]="true" dateFormat="dd/mm/yy"></p-datepicker>
+                <p-datepicker formControlName="dateWork" [showIcon]="true" dateFormat="{{appProperties.dateFormat}}"></p-datepicker>
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Date To</label>
             <div class="col-span-12 md:col-span-6">
-                <p-datepicker formControlName="dateTo" [showIcon]="true" dateFormat="dd/mm/yy"></p-datepicker>
+                <p-datepicker formControlName="dateTo" [showIcon]="true" dateFormat="{{appProperties.dateFormat}}"></p-datepicker>
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Pun I</label>
             <div class="col-span-12 md:col-span-6 flex gap-2">
-                <p-datepicker class="flex-1" formControlName="punI_D" [showIcon]="true"></p-datepicker>
+                <p-datepicker class="flex-1" formControlName="punI_D" dateFormat="{{appProperties.dateFormat}}" [showIcon]="true"></p-datepicker>
                 <p-datepicker class="w-32" formControlName="punI_T" [timeOnly]="true" [showTime]="true"></p-datepicker>
             </div>
         </div>
@@ -36,8 +36,8 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Pun O</label>
             <div class="col-span-12 md:col-span-6 flex gap-2">
-                <p-datepicker class="flex-1" formControlName="punO_D" [showIcon]="true"></p-datepicker>
-                <p-datepicker class="w-32" formControlName="punI_T" [timeOnly]="true" [showTime]="true"></p-datepicker>
+                <p-datepicker class="flex-1" formControlName="punO_D" dateFormat="{{appProperties.dateFormat}}" [showIcon]="true"></p-datepicker>
+                <p-datepicker class="w-32" formControlName="punO_T" [timeOnly]="true" [showTime]="true"></p-datepicker>
             </div>
         </div>
 
@@ -65,6 +65,7 @@
                               accept=".doc,.jpg,.pdf,.xls,.xlsx,.xlm,.png"
                               maxFileSize="2000000"
                               mode="advanced"
+                              [disabled]="requestForm.disabled"
                               url="https://www.primefaces.org/cdn/api/upload.php">
                     <ng-template #empty>
                         <div class="my-5">Drag and drop files to here to upload.</div>
@@ -82,7 +83,7 @@
         </div>
 
         <div class="flex justify-start gap-2 mt-6">
-            <p-button label="Submit" (onClick)="onSubmit()" [loading]="loading" [disabled]="requestForm.invalid"></p-button>
+            <p-button label="Submit" (onClick)="onSubmit()" [loading]="loading" *ngIf="requestForm.enabled" [disabled]="requestForm.invalid"></p-button>
             <p-button label="Cancel" (onClick)="onCancel()" severity="secondary" [outlined]="true"></p-button>
         </div>
     </div>

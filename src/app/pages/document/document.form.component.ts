@@ -20,6 +20,7 @@ import {FileUpload} from "primeng/fileupload";
 import {DatePicker} from "primeng/datepicker";
 import {LookupAutocompleteComponent} from "../../conponents/lookup-autocomplete/lookup-autocomplete.component";
 import {Textarea} from "primeng/textarea";
+import {appProperties} from "../../../app.properties";
 
 @Component({
     selector: 'app-document',
@@ -63,14 +64,15 @@ export class DocumentFormComponent implements OnInit {
 
     ngOnInit(): void {
         /*this.buildBreadcrumb();*/
+        const today = new Date();
         this.requestForm = new UntypedFormGroup({
             employee: new UntypedFormControl(null, Validators.required),
-            dateWork: new UntypedFormControl(null, Validators.required),
-            dateTo: new UntypedFormControl(null),
-            punI_D: new UntypedFormControl(null),
-            punI_T: new UntypedFormControl(null),
-            punO_D: new UntypedFormControl(null),
-            punO_T: new UntypedFormControl(null),
+            dateWork: new UntypedFormControl(today, Validators.required),
+            dateTo: new UntypedFormControl(today),
+            punI_D: new UntypedFormControl(today),
+            punI_T: new UntypedFormControl(today),
+            punO_D: new UntypedFormControl(today),
+            punO_T: new UntypedFormControl(today),
             reason: new UntypedFormControl(null, Validators.required),
             remark: new UntypedFormControl(null),
             attachment: new UntypedFormControl(null)
@@ -112,6 +114,7 @@ export class DocumentFormComponent implements OnInit {
             return;
         }
 
+        this.requestForm.disable();
         const criteria : any = requestForm.value;
         console.log('Search Criteria:', criteria);
         this.loading = true;
@@ -137,4 +140,6 @@ export class DocumentFormComponent implements OnInit {
 
         this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
     }
+
+    protected readonly appProperties = appProperties;
 }
