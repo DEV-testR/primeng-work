@@ -1,0 +1,56 @@
+<!--suppress HtmlUnknownTag -->
+<toast-messages/>
+<!--<p-fileUpload
+    #fileUploader
+    customUpload="true"
+    (uploadHandler)="onUpload($event)"
+    [multiple]="true"
+    accept=".doc,.jpg,.pdf,.xls,.xlsx,.xlm,.png"
+    [maxFileSize]="MAX_SIZE"
+    mode="advanced"
+    [disabled]="disabled">
+    <ng-template pTemplate="content">
+        <ul class="list-none p-0 m-0" *ngIf="uploadedFiles.length">
+            <li *ngFor="let file of uploadedFiles; let i = index"
+                class="flex align-items-center justify-content-between p-2 border-bottom-1 surface-border">
+                        <span class="text-primary cursor-pointer hover:underline" (click)="downloadFile(file)">
+                            <i class="pi pi-file mr-2"></i>{{ file.fileLabel }}
+                        </span>
+                <i *ngIf="!disabled" class="pi pi-trash text-danger cursor-pointer" (click)="removeFile(i)"></i>
+            </li>
+        </ul>
+        <div *ngIf="!uploadedFiles.length" class="my-5 text-center">
+            Drag and drop files to here to upload.
+        </div>
+    </ng-template>
+</p-fileUpload>-->
+<p-fileUpload
+    #fileUploader
+    customUpload="true"
+    (uploadHandler)="onUpload($event)"
+    [multiple]="true"
+    accept=".doc,.jpg,.pdf,.xls,.xlsx,.xlm,.png"
+    [maxFileSize]="MAX_SIZE"
+    mode="advanced"
+    [disabled]="disabled">
+
+    <ng-template pTemplate="content">
+        <ul class="list-none p-0 m-0" *ngIf="uploadedFiles.length">
+            <li *ngFor="let file of uploadedFiles; let i = index" class="flex gap-5 align-items-center justify-content-between p-2 border-bottom-1 surface-border">
+                <span class="text-primary cursor-pointer hover:underline" (click)="downloadFile(file)">
+                    <i class="pi pi-file mr-2"></i>{{ file.fileLabel }}
+                </span>
+                <i *ngIf="!disabled" class="pi pi-trash text-danger cursor-pointer" (click)="removeFile(i)"></i>
+            </li>
+        </ul>
+
+        <div *ngIf="!uploadedFiles.length" class="my-5">
+            Drag and drop files to here to upload.
+        </div>
+    </ng-template>
+</p-fileUpload>
+<div class="mt-2">
+    <small class="text-gray-500">
+        DOC, JPG, PDF, XLS, XLM, PNG | (Limit Size {{ MAX_SIZE / 1000000 }} MB)
+    </small>
+</div>

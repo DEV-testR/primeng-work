@@ -15,11 +15,6 @@ interface autoCompleteItem {
     value: string;
 }
 
-/*interface AutoCompleteCompleteEvent {
-    originalEvent: Event;
-    query: string;
-}*/
-
 @Component({
     selector: 'app-lookup-autocomplete',
     standalone: true,
@@ -65,7 +60,6 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     @Input() isValidateFailed: boolean | undefined;
     @ViewChild(AutoComplete) autoComplete!: AutoComplete;
 
-    // items: lookupItem[] = [];
     sourceItems: lookupItem[] = [];
     filteredItems: autoCompleteItem[] = [];
     selectedItem: autoCompleteItem | undefined;
@@ -91,11 +85,6 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     private loadLookupData(): void {
         this.lookupService.fetchDataLookup(this.clazzName).subscribe({
             next: (res: LookupResponse[]) => {
-                /*this.items = res.map(item => ({
-                    label: `${item.code} : ${item.name}`,
-                    value: item.id
-                }));*/
-
                 this.sourceItems = res.map(item => ({
                     id: item.id,
                     code: item.code,
@@ -191,7 +180,6 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
             this.filteredItems = this.sourceItems.filter(item =>
                 item.code.toLowerCase().includes(query) ||
                 item.name.toLowerCase().includes(query)
-                // String(item.value).toLowerCase().includes(query)
             ).map(item => ({
                 label: `${item.code} : ${item.name}`,
                 value: item.id

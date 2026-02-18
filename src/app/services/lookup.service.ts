@@ -8,7 +8,7 @@ import {LookupResponse} from "../models/lookupResponse.model";
     providedIn: 'root',
 })
 export class LookupService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/lookup`;
+    private readonly API_URL = `${appProperties.BASE_API_URL}/api/v1/lookup`;
     constructor(private http: HttpClient) {
     }
 

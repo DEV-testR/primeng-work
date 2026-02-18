@@ -21,6 +21,7 @@ import {DatePicker} from "primeng/datepicker";
 import {LookupAutocompleteComponent} from "../../conponents/lookup-autocomplete/lookup-autocomplete.component";
 import {Textarea} from "primeng/textarea";
 import {appProperties} from "../../../app.properties";
+import {FilesUploadComponent} from "../../conponents/files-upload/files-upload.component";
 
 @Component({
     selector: 'app-document',
@@ -38,6 +39,7 @@ import {appProperties} from "../../../app.properties";
         Textarea,
         NgForOf,
         NgIf,
+        FilesUploadComponent,
     ],
     styleUrls: ['./document.component.scss'],
     providers: [DocumentService, MessageService]
