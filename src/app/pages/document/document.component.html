@@ -9,14 +9,14 @@
         <div class="grid grid-cols-12 ml-10">
             <label class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Status</label>
             <div class="col-span-12 md:col-span-4">
-                <app-document-status-filter formControlName="status"/>
+                <app-document-status-filter formControlName="documentStatus"/>
             </div>
         </div>
 
         <div class="grid grid-cols-12 ml-10">
             <label class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Employee</label>
             <div class="col-span-12 md:col-span-4">
-                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Employee'" formControlName="employee"/>
+                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Employee'" formControlName="emId"/>
             </div>
         </div>
 
@@ -58,12 +58,12 @@
             <ng-template pTemplate="body" let-doc let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ doc.employeeCode }}</td>
-                    <td>{{ doc.employeeName }}</td>
-                    <td>{{ doc.documentDate }}</td>
+                    <td>{{ doc.emId.code }}</td>
+                    <td>{{ doc.emId.name }}</td>
+                    <td>{{ doc.documentDate | date: appProperties.dateFormat }}</td>
                     <td>
-                        <span [class]="'status-badge status-' + doc.status">
-                            {{ doc.statusLabel }}
+                        <span [class]="'status-badge status-' + doc.documentStatusSeverity">
+                            {{ doc.documentStatusLabel }}
                         </span>
                     </td>
                     <td>

@@ -7,28 +7,28 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Employee *</label>
             <div class="col-span-12 md:col-span-6">
-                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Employee'" formControlName="employee"/>
+                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Employee'" formControlName="emId"/>
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Date Work *</label>
             <div class="col-span-12 md:col-span-6">
-                <p-datepicker formControlName="dateWork" [showIcon]="true" dateFormat="{{appProperties.dateFormat}}"></p-datepicker>
+                <p-datepicker formControlName="dateWork" [showIcon]="true" dateFormat="{{appProperties.inputDateFormat}}"></p-datepicker>
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Date To</label>
             <div class="col-span-12 md:col-span-6">
-                <p-datepicker formControlName="dateTo" [showIcon]="true" dateFormat="{{appProperties.dateFormat}}"></p-datepicker>
+                <p-datepicker formControlName="dateTo" [showIcon]="true" dateFormat="{{appProperties.inputDateFormat}}"></p-datepicker>
             </div>
         </div>
 
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Pun I</label>
             <div class="col-span-12 md:col-span-6 flex gap-2">
-                <p-datepicker class="flex-1" formControlName="punI_D" dateFormat="{{appProperties.dateFormat}}" [showIcon]="true"></p-datepicker>
+                <p-datepicker class="flex-1" formControlName="punI_D" dateFormat="{{appProperties.inputDateFormat}}" [showIcon]="true"></p-datepicker>
                 <p-datepicker class="w-32" formControlName="punI_T" [timeOnly]="true" [showTime]="true"></p-datepicker>
             </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Pun O</label>
             <div class="col-span-12 md:col-span-6 flex gap-2">
-                <p-datepicker class="flex-1" formControlName="punO_D" dateFormat="{{appProperties.dateFormat}}" [showIcon]="true"></p-datepicker>
+                <p-datepicker class="flex-1" formControlName="punO_D" dateFormat="{{appProperties.inputDateFormat}}" [showIcon]="true"></p-datepicker>
                 <p-datepicker class="w-32" formControlName="punO_T" [timeOnly]="true" [showTime]="true"></p-datepicker>
             </div>
         </div>
@@ -44,7 +44,7 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Reason *</label>
             <div class="col-span-12 md:col-span-6">
-                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Reason'" formControlName="reason"/>
+                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Reason'" formControlName="reasonId"/>
             </div>
         </div>
 

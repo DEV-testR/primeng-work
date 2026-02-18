@@ -3,12 +3,7 @@ import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from "@angular/for
 import {AutoComplete} from "primeng/autocomplete";
 import {LookupService} from "../../services/lookup.service";
 import {LookupResponse} from "../../models/lookupResponse.model";
-
-interface lookupItem {
-    id: string;
-    code: string;
-    name: string;
-}
+import {LookupItem} from "../../models/lookup.model";
 
 interface autoCompleteItem {
     label: string;
@@ -60,7 +55,7 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     @Input() isValidateFailed: boolean | undefined;
     @ViewChild(AutoComplete) autoComplete!: AutoComplete;
 
-    sourceItems: lookupItem[] = [];
+    sourceItems: LookupItem[] = [];
     filteredItems: autoCompleteItem[] = [];
     selectedItem: autoCompleteItem | undefined;
     disabled: boolean = false;
@@ -113,7 +108,7 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
         }
 
         const targetId: string = val.id ? val.id : val;
-        const foundItem: lookupItem | undefined = this.sourceItems.find(i => String(i.id) === String(targetId));
+        const foundItem: LookupItem | undefined = this.sourceItems.find(i => String(i.id) === String(targetId));
 
         if (foundItem) {
             this.selectedItem = {

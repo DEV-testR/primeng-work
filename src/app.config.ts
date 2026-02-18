@@ -1,4 +1,4 @@
-import {provideHttpClient, withInterceptors} from '@angular/common/http';
+import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
 import {ApplicationConfig} from '@angular/core';
 import {provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling} from '@angular/router';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
             withEnabledBlockingInitialNavigation()
         ),
         provideHttpClient(
-            // withFetch(),
+            withFetch(),
             withInterceptors([AuthInterceptor])
         ),
         provideAnimationsAsync(),

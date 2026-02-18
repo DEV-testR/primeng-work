@@ -6,11 +6,13 @@ export interface GlobalConfig {
     BASE_API_URL: string;
     defaultPageSize: number;
     dateFormat: string;
+    inputDateFormat: string;
 }
 
 export const appProperties: GlobalConfig = {
     BASE_API_URL: 'http://localhost:48080',
-    dateFormat:'dd/mm/yy',
+    inputDateFormat:'dd/mm/yy',
+    dateFormat:'dd/MM/yyyy',
     rootPath: 'sakai',
     production: false,
     defaultPageSize: 0,
