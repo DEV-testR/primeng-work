@@ -8,6 +8,7 @@ import {LoginComponent} from "./app/pages/auth/login/login.component";
 import {UserProfileComponent} from "./app/pages/profile/user-profile.component";
 import {appProperties} from "./app.properties";
 import {RunPayrollComponent} from "./app/pages/runpayroll/run-payroll.component";
+import {OrgChartComponent} from "./app/pages/orgchart/org-chart.component";
 
 export const appRoutes: Routes = [
     {path: '', component: LoginComponent},
@@ -19,6 +20,7 @@ export const appRoutes: Routes = [
             {path: '', component: Dashboard},
             {path: 'profile', component: UserProfileComponent},
             {path: 'run-payroll', component: RunPayrollComponent},
+            {path: 'orgchart', component: OrgChartComponent},
             {path: 'document',
                 loadChildren: () => import('./app/pages/document/document.routes'),
                 data: { breadcrumb: 'Documents' }

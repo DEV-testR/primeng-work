@@ -1,0 +1,54 @@
+<toast-messages/>
+<p-fluid>
+<div class="flex h-[calc(100vh-8rem)] gap-5">
+    <div class="rounded-[var(--content-border-radius)] w-80 p-1 bg-[var(--surface-overlay)] flex flex-col h-[calc(100vh-8rem)] shadow-sm">
+        <div class="p-5 pb-2 flex-none bg-[var(--surface-overlay)]">
+            <h3 class="text-lg font-bold mb-4 text-[var(--text-color)]">
+                Waiting For Positioning. ({{ filteredUnassignedList().length }})
+            </h3>
+
+            <div class="relative">
+                <input
+                        name="search"
+                        pInputText
+                        type="text"
+                        placeholder="Search name or code..."
+                        (input)="onSearch($event)"
+                        class=""
+                />
+                <span class="absolute right-3 top-2.5 text-[var(--text-color)]">
+                <i class="pi pi-search text-xs"></i>
+            </span>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-5 pt-2">
+            <div class="flex flex-col gap-3">
+                @for (emp of filteredUnassignedList(); track emp.id) {
+                    <div class="flex items-center gap-3 bg-[var(--surface-overlay)] border p-3 rounded-lg cursor-grab active:cursor-grabbing hover:border-[var(--primary-color)] hover:shadow-md transition-all"
+                         pDroppable
+                         (onDrop)="dropToUnassigned()"
+                         pDraggable
+                         (onDragStart)="onDragUnassigned(emp)"
+                         (onDragEnd)="onDragEnd()">
+                        <img [src]="emp.imageUrl || 'assets/default.png'"
+                             class="w-10 h-10 rounded-full object-cover border border-[var(--primary-color)] bg-[var(--surface-overlay)]" alt="">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-[var(--text-color)]">{{ emp.name }}</span>
+                            <span class="text-xs text-[var(--text-color)] mt-0.5">
+                            {{ emp.positionName || 'Waiting for positioning.' }}
+                        </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="flex-1 overflow-auto p-10">
+        <div class="flex justify-center min-w-max">
+            @for (root of nodes(); track root.data.id) {
+                <app-org-node [node]="root"></app-org-node>
+            }
+        </div>
+    </div>
+</div>
+</p-fluid>

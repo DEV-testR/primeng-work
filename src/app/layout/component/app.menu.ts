@@ -26,6 +26,7 @@ export class AppMenu {
                 items: [
                     // {label: 'Talent Acquisition', icon: 'pi pi-fw pi-id-card', routerLink: [`/${appProperties.rootPath}/talent-acquisition`]},
                     {label: 'Document', icon: 'pi pi-fw pi-id-card', routerLink: [`/${appProperties.rootPath}/document`]},
+                    {label: 'OrgChart', icon: 'pi pi-fw pi-id-card', routerLink: [`/${appProperties.rootPath}/orgchart`]},
                     {label: 'Run Payroll', icon: 'pi pi-fw pi-id-card', routerLink: [`/${appProperties.rootPath}/run-payroll`]},
                     {label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/']},
                     {label: 'Profile', icon: 'pi pi-fw pi-user', routerLink: [`/${appProperties.rootPath}/profile`]},
