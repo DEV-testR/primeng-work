@@ -1,0 +1,71 @@
+<toast-messages/>
+<p-fluid>
+    <div class="flex flex-col gap-5">
+        <p-panel header="Approval Steps" [toggleable]="true" [collapsed]="false">
+            <p-stepper [value]="1">
+                <p-step-list>
+                    <p-step *ngFor="let step of flowDoc?.steps" [value]="step.stepno">
+                        <div class="flex flex-col">
+                            <span class="font-bold">Step {{ step.stepno }}</span>
+                            <small *ngIf="step.emmanInfo">
+                                {{ step.emmanInfo.code }} - {{ step.emmanInfo.name }}
+                            </small>
+                            <small class="text-primary" *ngIf="step.actionType">{{ step.actionType }}</small>
+                        </div>
+                    </p-step>
+                </p-step-list>
+            </p-stepper>
+        </p-panel>
+
+        <p-panel header="Document Information" [toggleable]="true" [collapsed]="false">
+            <div class="flex flex-col gap-4 p-2">
+                <ng-container *ngFor="let dataFld of flowContentKeys">
+                    <div *ngIf="flowContent[dataFld]" class="flex gap-4">
+                        <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }} : </span>
+                        <ng-container [ngSwitch]="flowContentDataType.get(dataFld)">
+                            <span *ngSwitchCase="'DATE'" class="font-medium">
+                                {{ flowContent[dataFld] | date:appProperties.dateFormat }}
+                            </span>
+                            <span *ngSwitchCase="'BOOLEAN'" class="font-medium">
+                                {{ flowContent[dataFld] | yesNo }}
+                            </span>
+                            <span *ngSwitchCase="'DECIMAL'" class="font-medium">
+                                {{ flowContent[dataFld] | number:'1.2-2' }}
+                            </span>
+                            <ng-template [ngSwitchCase]="'LIST'">
+                                <div *ngIf="flowContent[dataFld].length > 0;" class="col-span-full flex flex-col gap-1">
+                                    <div *ngFor="let file of flowContent[dataFld]"
+                                         class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
+                                        <div class="flex items-center gap-2">
+                                            <i class="pi pi-file text-primary"></i>
+                                            <span class="text-sm">{{ file.fileName }}</span>
+                                        </div>
+                                        <p-button icon="pi pi-download"
+                                                  [rounded]="true"
+                                                  [text]="true"
+                                                  severity="primary"
+                                                  size="small"
+                                                  pTooltip="Download"
+                                                  (onClick)="downloadFile(file)">
+                                        </p-button>
+                                    </div>
+                                </div>
+                                <span class="font-medium">&nbsp;{{ flowContent[dataFld] | date:appProperties.dateFormat }}</span>
+                            </ng-template>
+                            <span *ngSwitchDefault class="font-medium">
+                                {{ flowContent[dataFld] }}
+                            </span>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>
+        </p-panel>
+
+        <div class="fixed bottom-16 right-10">
+            <div class="flex justify-end gap-2">
+                <p-button label="Cancel" (onClick)="pageBack()" severity="danger" [outlined]="true"></p-button>
+                <p-button label="Submit" (onClick)="ngSubmit()"></p-button>
+            </div>
+        </div>
+    </div>
+</p-fluid>

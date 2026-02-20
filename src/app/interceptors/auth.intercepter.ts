@@ -1,12 +1,10 @@
-import {HttpInterceptorFn, HttpRequest, HttpEvent, HttpErrorResponse, HttpHandlerFn} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
 import {inject} from '@angular/core';
-import {Observable, throwError, switchMap, BehaviorSubject, filter, take} from 'rxjs';
+import {BehaviorSubject, filter, Observable, switchMap, take, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {AuthService} from '../services/auth.service';
 import {Router} from "@angular/router";
 
-// ตัวแปรสถานะและ BehaviorSubject ควรอยู่ข้างนอก interceptor เพื่อแชร์สถานะได้ข้าม request
-// แต่ถ้าในนี้ชั่วคราวก็ใช้แบบนี้ก่อน
 let isRefreshing = false;
 let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
@@ -27,9 +25,9 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
         catchError(err => {
             if (err.status === 401 && isRefreshTokenRequest) {
                 isRefreshing = false;
-                refreshTokenSubject.next(null); // เคลียร์สถานะตัวที่รอ
+                refreshTokenSubject.next(null);
                 authService.logout();
-                router.navigate(['/login']).then(r => throwError(() => err));
+                router.navigate(['/login']).then(() => throwError(() => err));
             }
 
             if (err instanceof HttpErrorResponse && err.status === 401) {
@@ -42,7 +40,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
                             isRefreshing = false;
                             const newAccessToken = authService.getAccessToken();
                             if (newAccessToken) {
-                                refreshTokenSubject.next(newAccessToken);  // ส่งค่าใหม่
+                                refreshTokenSubject.next(newAccessToken);
                                 const newReq = req.clone({
                                     setHeaders: {
                                         Authorization: `Bearer ${newAccessToken}`

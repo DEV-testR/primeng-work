@@ -16,9 +16,16 @@ export class DocumentService {
         return this.http.post<any>(`${this.API_URL}/search`, payload);
     }
 
-    submit(payload: any): Observable<any> {
-        // ส่ง POST แบบปกติ ได้รับ Response กลับมาเป็น Body เลย
-        return this.http.post<any>(`${this.API_URL}/submit`, payload);
+    delete(id : String): Observable<any> {
+        return this.http.delete(`${this.API_URL}/delete/${id}`);
+    }
+
+    save(payload: any): Observable<any> {
+        return this.http.post<any>(`${this.API_URL}/save`, payload);
+    }
+
+    generateFlow(payload: any): Observable<any> {
+        return this.http.post<any>(`${this.API_URL}/generate-flow`, payload);
     }
 
 }

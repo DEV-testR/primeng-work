@@ -9,18 +9,17 @@ import {
     Validators
 } from "@angular/forms";
 import {Fluid} from "primeng/fluid";
-import {DocumentData} from "../../models/document.model";
-import {DocumentService} from "../../services/document.service";
-import {ToastMessagesComponent} from "../../conponents/toast-messages/toast-messages.component";
+import {DocumentService} from "../../../../services/document.service";
+import {ToastMessagesComponent} from "../../../../conponents/toast-messages/toast-messages.component";
 import {MenuItem, MessageService} from "primeng/api";
 import {TableModule} from "primeng/table";
 import {Location, NgIf} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import {DatePicker} from "primeng/datepicker";
-import {LookupAutocompleteComponent} from "../../conponents/lookup-autocomplete/lookup-autocomplete.component";
+import {LookupAutocompleteComponent} from "../../../../conponents/lookup-autocomplete/lookup-autocomplete.component";
 import {Textarea} from "primeng/textarea";
-import {appProperties} from "../../../app.properties";
-import {FilesUploadComponent} from "../../conponents/files-upload/files-upload.component";
+import {appProperties} from "../../../../../app.properties";
+import {FilesUploadComponent} from "../../../../conponents/files-upload/files-upload.component";
 
 @Component({
     selector: 'app-document',
@@ -38,7 +37,7 @@ import {FilesUploadComponent} from "../../conponents/files-upload/files-upload.c
         NgIf,
         FilesUploadComponent,
     ],
-    styleUrls: ['./document.component.scss'],
+    styleUrls: ['../../document.component.scss'],
     providers: [DocumentService, MessageService]
 })
 export class DocumentFormComponent implements OnInit {
@@ -47,6 +46,7 @@ export class DocumentFormComponent implements OnInit {
     items: MenuItem[] | undefined;
     home: MenuItem | undefined;
     requestForm!: UntypedFormGroup;
+    documentForm: any;
 
     constructor(
         fb: UntypedFormBuilder,
@@ -60,7 +60,9 @@ export class DocumentFormComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        /*this.buildBreadcrumb();*/
+        const state = history.state;
+        this.documentForm = state.documentForm;
+
         const today = new Date();
         this.requestForm = new UntypedFormGroup({
             emId: new UntypedFormControl(null, Validators.required),
@@ -74,6 +76,18 @@ export class DocumentFormComponent implements OnInit {
             remark: new UntypedFormControl(null),
             attachment: new UntypedFormControl(null)
         });
+
+        if (this.documentForm) {
+            this.requestForm.patchValue({
+                ...this.documentForm,
+                dateWork: new Date(this.documentForm.dateWork),
+                dateTo: new Date(this.documentForm.dateTo),
+                punI_D: new Date(this.documentForm.punI_D),
+                punI_T: new Date(this.documentForm.punI_T),
+                punO_D: new Date(this.documentForm.punO_D),
+                punO_T: new Date(this.documentForm.punO_T),
+            });
+        }
     }
 
     /*private buildBreadcrumb() {
@@ -99,7 +113,7 @@ export class DocumentFormComponent implements OnInit {
         this.items = breadcrumbs;
     }*/
 
-    onSubmit() {
+    ngDrafts() {
         const requestForm: UntypedFormGroup = this.requestForm;
         this.isValidateFailed = requestForm.invalid;
 
@@ -107,7 +121,49 @@ export class DocumentFormComponent implements OnInit {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Validation Error',
-                detail: 'กรุณากรอกข้อมูลให้ครบถ้วน'
+                detail: 'Required Information'
+            });
+            return;
+        }
+
+        const payload = { ...requestForm.value };
+        payload.documentStatus = 0;
+        payload.documentType = 'TIME';
+        this.loading = true;
+        requestForm.disable();
+
+        this.documentService.save(payload).subscribe({
+            next: (response) => {
+                console.log('submit', response);
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Document Action Success'
+                });
+            },
+            error: (err) => {
+                this.loading = false;
+                requestForm.enable();
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: err.error?.message || 'ไม่สามารถบันทึกข้อมูลได้'
+                });
+                console.error('Submit Error:', err);
+            }
+        });
+    }
+
+    ngGenerateFlow() {
+        const requestForm: UntypedFormGroup = this.requestForm;
+        this.isValidateFailed = requestForm.invalid;
+
+        if (this.isValidateFailed) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Validation Error',
+                detail: 'Required Information'
             });
             return;
         }
@@ -118,15 +174,21 @@ export class DocumentFormComponent implements OnInit {
         this.loading = true;
         requestForm.disable();
 
-        this.documentService.submit(payload).subscribe({
+        this.documentService.generateFlow(payload).subscribe({
             next: (response) => {
                 console.log('submit', response);
                 this.loading = false;
-                this.messageService.add({
+
+                this.router.navigate(['../flow'], {
+                    relativeTo: this.route,
+                    state: { flowDoc: response, }
+                }).then(() => console.log('open flow document'));
+
+                /*this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
-                    detail: 'บันทึกเอกสารเรียบร้อยแล้ว'
-                });
+                    detail: 'Generate Flow Success'
+                });*/
 
                 // สามารถจัดการต่อได้ เช่น reset form หรือไปหน้าอื่น
                 // this.resetForm();
@@ -145,8 +207,8 @@ export class DocumentFormComponent implements OnInit {
         });
     }
 
-    onCancel() {
-        this.location.back();
+    pageBack() {
+        this.router.navigate(['../'], {relativeTo: this.route}).then(() => console.log('open document page'));
     }
 
     protected readonly appProperties = appProperties;

@@ -1,38 +1,50 @@
 <div class="flex flex-col items-center">
-    <div class="w-[220px] bg-[var(--surface-overlay)] rounded-lg border shadow-sm relative z-10 cursor-grab active:cursor-grabbing hover:border-[var(--primary-color)] hover:shadow-md transition-all overflow-hidden"
+    <div class="w-[220px] bg-[var(--surface-overlay)] border-[var(--surface-border)] rounded-lg border shadow-sm relative z-10
+                hover:border-[var(--primary-color)] transition-all overflow-hidden cursor-grab active:cursor-grabbing"
          pDraggable
          (onDragStart)="onDragStart()"
          pDroppable
-         (onDrop)="onDrop()">
+         (onDrop)="onDrop()"
+         >
 
         <div class="h-1.5 w-full bg-[var(--primary-color)]"></div>
+
         <div class="p-3 flex items-center gap-3">
-            <img [src]="node.data.imageUrl || 'assets/default.png'"
-                 class="w-10 h-10 rounded-full object-cover border border-[var(--primary-color)] bg-[var(--surface-overlay)]" alt="">
-            <div class="flex flex-col text-left">
-                <span class="text-sm font-bold text-[var(--text-color)]">{{ node.label }}</span>
-                <span class="text-[11px] text-[var(--text-color)] leading-tight mt-0.5">
-                    {{ node.data.positionName || 'Waiting for positioning.' }}
+            <img [ngSrc]="node.data?.imageUrl || 'assets/defaultAvatar.png'"
+                 width="40"
+                 height="40"
+                 class="rounded-full object-cover border p-0.5"
+                 alt="avatar">
+            <div class="flex flex-col text-left overflow-hidden">
+                <span class="text-sm font-bold text-[var(--text-color)] truncate">
+                    {{ node.label }}
+                </span>
+                <span class="text-[11px] text-[var(--text-color)] opacity-70 truncate">
+                    {{ node.data?.positionName || 'Waiting...' }}
                 </span>
             </div>
         </div>
     </div>
 
-    <div class="flex justify-center pt-6 relative
-                before:absolute before:top-0 before:left-1/2 before:-translate-x-[1px] before:w-[2px] before:h-6 before:bg-[var(--primary-color)]
-"
-         *ngIf="node.children?.length">
+    @if (node.children && node.children.length > 0) {
+        <div class="w-[2px] h-6 bg-[var(--primary-color)]"></div>
 
-        <div class="relative pt-6 px-2
-                    before:absolute before:top-0 before:left-0 before:w-[calc(50%+1px)] before:h-6 before:border-t-2 before:border-r-2 before:border-[var(--primary-color)]
-                    after:absolute after:top-0 after:right-0 after:w-[calc(50%+1px)] after:h-6 after:border-t-2 after:border-[var(--primary-color)]
-                    first:before:border-t-0
-                    last:after:hidden
-                    only:before:border-t-0 only:after:hidden"
-             *ngFor="let child of node.children">
+        <div class="flex">
+            @for (child of node.children; track child.data?.id; let first = $first; let last = $last) {
+                <div class="relative flex flex-col items-center">
 
-            <app-org-node [node]="child"></app-org-node>
+                    <div class="absolute top-0 w-full h-[2px] flex">
+                        <div class="flex-1" [class.bg-[var(--primary-color)]]="!first"></div>
+                        <div class="flex-1" [class.bg-[var(--primary-color)]]="!last"></div>
+                    </div>
 
+                    <div class="w-[2px] h-6 bg-[var(--primary-color)] relative z-0"></div>
+
+                    <div class="px-2">
+                        <app-org-node [node]="child"></app-org-node>
+                    </div>
+                </div>
+            }
         </div>
-    </div>
+    }
 </div>

@@ -28,7 +28,7 @@
     <div class="layout-topbar-actions">
         <div class="layout-config-menu">
             <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-                <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+                <i [ngClass]="{ 'pi': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
             </button>
             <div class="relative" style="display: none">
                 <button
@@ -52,10 +52,6 @@
 
         <div class="layout-topbar-menu hidden lg:block" style="border-radius: 1rem">
             <div class="layout-topbar-menu-content">
-                <!--<button type="button" class="layout-topbar-action">
-                    <i class="pi pi-calendar"></i>
-                    <span>Calendar</span>
-                </button>-->
                 <noti-inbox-topbar/>
                 <user-menu-topbar/>
             </div>

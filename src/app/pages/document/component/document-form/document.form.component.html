@@ -57,35 +57,16 @@
         </div>
 
         <div class="grid grid-cols-12 gap-4">
-            <label class="col-span-12 md:col-span-2 font-medium">ไฟล์แนบ</label>
+            <label class="col-span-12 md:col-span-2 font-medium">Attachment</label>
             <div class="col-span-12 md:col-span-6">
-                <!--<p-fileupload name="demo[]"
-                              (onUpload)="onUpload($event)"
-                              [multiple]="true"
-                              accept=".doc,.jpg,.pdf,.xls,.xlsx,.xlm,.png"
-                              maxFileSize="2000000"
-                              mode="advanced"
-                              [disabled]="requestForm.disabled"
-                              url="https://www.primefaces.org/cdn/api/upload.php">
-                    <ng-template #empty>
-                        <div class="my-5">Drag and drop files to here to upload.</div>
-                    </ng-template>
-                    <ng-template #content>
-                        <ul *ngIf="uploadedFiles.length">
-                            <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
-                        </ul>
-                    </ng-template>
-                </p-fileupload>
-                <div class="mt-3">
-                <small class="text-gray-500">DOC, JPG, PDF, XLS, XLM, PNG | (Limit Size 2 MB)</small>
-                </div>-->
                 <app-files-upload formControlName="attachment"/>
             </div>
         </div>
 
         <div class="flex justify-start gap-2 mt-6">
-            <p-button label="Submit" (onClick)="onSubmit()" [loading]="loading" *ngIf="requestForm.enabled" [disabled]="requestForm.invalid"></p-button>
-            <p-button label="Cancel" (onClick)="onCancel()" severity="secondary" [outlined]="true"></p-button>
+            <p-button label="Submit" (onClick)="ngGenerateFlow()" [loading]="loading" *ngIf="requestForm.enabled" [disabled]="requestForm.invalid"></p-button>
+            <p-button label="Drafts" (onClick)="ngDrafts()" [loading]="loading" *ngIf="requestForm.enabled" [disabled]="requestForm.invalid"></p-button>
+            <p-button label="Cancel" (onClick)="pageBack()" severity="secondary" [outlined]="true"></p-button>
         </div>
     </div>
 </p-fluid>

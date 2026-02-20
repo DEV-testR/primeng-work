@@ -19,6 +19,7 @@ import {TableModule} from "primeng/table";
 import {DatePipe, NgIf} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import {appProperties} from "../../../app.properties";
+import {ConfirmationModalComponent} from "../../conponents/app-confirmation-modal/app.confirmation.modal.component";
 
 @Component({
     selector: 'app-document',
@@ -35,6 +36,7 @@ import {appProperties} from "../../../app.properties";
         TableModule,
         NgIf,
         DatePipe,
+        ConfirmationModalComponent,
 
 
     ],
@@ -45,7 +47,12 @@ export class DocumentComponent implements OnInit {
     searchForm!: UntypedFormGroup;
     loading: boolean = false;
     isValidateFailed: boolean = false;
+    displayConfirmation: boolean = false;
+    messageConfirm: string = '';
+    selectedDocToDel :DocumentData | undefined;
     documentList: DocumentData[] = [];
+    protected readonly appProperties = appProperties;
+
     constructor(
         fb: UntypedFormBuilder,
         private readonly messageService: MessageService,
@@ -70,8 +77,7 @@ export class DocumentComponent implements OnInit {
     }
 
     onCreate() {
-        // await this.router.navigate(['/documents/form']);
-        this.router.navigate(['form'], { relativeTo: this.route });
+        this.router.navigate(['form'], {relativeTo: this.route}).then(() => {});
     }
 
     onSearch() {
@@ -112,5 +118,51 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    protected readonly appProperties = appProperties;
+    confirmDelete(doc : DocumentData) {
+        this.displayConfirmation = true
+        this.selectedDocToDel = doc;
+        this.messageConfirm = `Are you sure you want to proceed '${doc.documentNo}' ?`;
+    }
+
+    ngDeleteData() {
+        this.displayConfirmation = false;
+
+        // 1. Check null/undefined ให้ชัวร์
+        if (!this.selectedDocToDel || !this.selectedDocToDel.id) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Document information is missing.'
+            });
+            return;
+        }
+
+        const id = this.selectedDocToDel.id;
+        this.loading = true;
+
+        this.documentService.delete(id).subscribe({
+            next: (res) => {
+                console.log('delete', res);
+                this.loading = false;
+                this.documentList = this.documentList.filter(doc => doc.id !== id);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Document deleted successfully'
+                });
+
+                this.selectedDocToDel = undefined;
+            },
+            error: (err) => {
+                this.loading = false;
+                console.error('delete data failed', err);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: `Error ${err.status}`,
+                    detail: err.message || err.statusText
+                });
+            }
+        });
+    }
+
 }
