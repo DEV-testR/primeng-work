@@ -118,10 +118,31 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    confirmDelete(doc : DocumentData) {
+    ngDelete(doc : DocumentData) {
         this.displayConfirmation = true
         this.selectedDocToDel = doc;
         this.messageConfirm = `Are you sure you want to proceed '${doc.documentNo}' ?`;
+    }
+
+    ngSearchItemById(id : string) {
+        console.log('Search By Id:', id);
+        this.loading = true;
+        this.documentService.searchById(id).subscribe({
+            next: (res) => {
+                this.loading = false;
+                const documentState = (res.hasOwnProperty('flowDoc')) ? 'flow' : 'form'
+                this.router.navigate([documentState], {
+                    relativeTo: this.route,
+                    state: { documentForm: res, }
+                }).then(() => console.log(`open ${documentState} document`));
+                console.log('search result : ', res);
+            },
+            error: (err) => {
+                this.loading = false;
+                console.error('search data failed', err);
+                this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
+            }
+        });
     }
 
     ngDeleteData() {

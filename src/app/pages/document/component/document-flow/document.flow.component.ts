@@ -4,7 +4,17 @@ import {Step, StepList, Stepper} from "primeng/stepper";
 import {Fluid} from "primeng/fluid";
 import {Panel} from "primeng/panel";
 import {Button} from "primeng/button";
-import {DatePipe, DecimalPipe, NgForOf, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from "@angular/common";
+import {
+    DatePipe,
+    DecimalPipe,
+    NgClass,
+    NgForOf,
+    NgIf,
+    NgOptimizedImage,
+    NgSwitch,
+    NgSwitchCase,
+    NgSwitchDefault
+} from "@angular/common";
 import {appProperties} from "../../../../../app.properties";
 import {Tooltip} from "primeng/tooltip";
 import {FileUploadResult} from "../../../../conponents/files-upload/files-upload.component";
@@ -13,6 +23,7 @@ import {FileSaverService} from "ngx-filesaver";
 import {MessageService} from "primeng/api";
 import {ToastMessagesComponent} from "../../../../conponents/toast-messages/toast-messages.component";
 import {YesNoPipe} from "../../../../pipes/yes-no.pipe";
+import {DocumentService} from "../../../../services/document.service";
 
 @Component({
     selector: 'app-document-flow',
@@ -32,15 +43,21 @@ import {YesNoPipe} from "../../../../pipes/yes-no.pipe";
         NgSwitchCase,
         YesNoPipe,
         DecimalPipe,
-        NgSwitchDefault
+        NgSwitchDefault,
+        NgOptimizedImage,
+        NgClass
     ],
     templateUrl: './document.flow.component.html',
+    styleUrls: ['./document.flow.component.scss'],
     providers: [
         MessageService
     ]
 })
 export class DocumentFlowComponent implements OnInit {
     protected readonly appProperties = appProperties;
+    loading: boolean = false;
+    isAllowEdit:boolean = false;
+    isActiveStep: boolean = false;
     flowDoc: any;
     flowContent: any;
     flowContentKeys: any;
@@ -58,21 +75,24 @@ export class DocumentFlowComponent implements OnInit {
         private router: Router,
         private route: ActivatedRoute,
         private filesUploadService: FilesUploadService,
+        private documentService: DocumentService,
         private fileSaver: FileSaverService,
         private readonly messageService: MessageService,
     ) {}
 
     ngOnInit() {
-        this.flowDoc = history.state.flowDoc;
+        this.documentForm = history.state.documentForm;
+        this.flowDoc = this.documentForm.flowDoc;
         if (!this.flowDoc) {
             this.router.navigate(['/document'], {relativeTo: this.route}).then(() => console.log('open document page'));
             return;
         }
 
-        this.documentForm = this.flowDoc.documentForm;
-
         // Build Data FlowContent Info
+        this.isAllowEdit = this.documentForm.documentStatusVal === 0;
+        this.isActiveStep = this.flowDoc.isActiveStep;
         this.flowContent = { ...this.documentForm };
+        delete this.flowContent['documentStatusVal']
         this.flowContentKeys =  Object.keys(this.flowContent);
         for (let fldKey of this.flowContentKeys) {
             const value = this.flowContent[fldKey];
@@ -99,7 +119,10 @@ export class DocumentFlowComponent implements OnInit {
                     if (value.hasOwnProperty('name')) {
                         this.flowContent[fldKey] = value.name;
                         this.flowContentDataType.set(fldKey, 'STRING');
+                        break;
                     }
+
+                    this.flowContentDataType.set(fldKey, dateType.toUpperCase());
                     break;
                 default:
                     this.flowContentDataType.set(fldKey, dateType.toUpperCase());
@@ -110,14 +133,33 @@ export class DocumentFlowComponent implements OnInit {
     }
 
     pageBack() {
-        this.router.navigate(['../form'], {
+        const backState = (this.isAllowEdit) ? '../form' : '../';
+        this.router.navigate([backState], {
             relativeTo: this.route,
             state: { documentForm: this.documentForm, }
         }).then(() => console.log('open form document'));
     }
 
     ngSubmit() {
-
+        this.documentService.submitFlow(this.documentForm).subscribe({
+            next: (response) => {
+                console.log('submit', response);
+                this.documentForm = response;
+                this.flowDoc = this.documentForm.flowDoc;
+                this.isActiveStep = this.flowDoc.isActiveStep;
+                this.isAllowEdit = this.documentForm.documentStatus === 0;
+                this.loading = false;
+            },
+            error: (err) => {
+                this.loading = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: err.error?.message || 'Submit Failed.'
+                });
+                console.error('Submit Error:', err);
+            }
+        });
     }
 
     downloadFile(file: FileUploadResult): void {
@@ -133,11 +175,28 @@ export class DocumentFlowComponent implements OnInit {
         });
     }
 
+    resolveStepIcon(step: any): string {
+        // 1. ถ้าเป็น Step 0 (Requester) ให้เป็น Check เสมอ
+        if (step.stepno === 0) {
+            return 'pi pi-check';
+        }
+
+        // 2. ถ้ามีวันที่ดำเนินการแล้ว (ดำเนินการเสร็จสิ้น)
+        if (step.actionDate) {
+            return 'pi pi-check';
+        }
+
+        // 3. ถ้าเป็น Step ปัจจุบัน แต่ยังไม่มีการ Action (รออนุมัติ)
+        if (step.stepno === this.flowDoc?.activeStep) {
+            return 'pi pi-hourglass';
+        }
+
+        // 4. กรณีอื่นๆ (Step ในอนาคต)
+        return 'pi pi-lock text-400';
+    }
+
     private showToast(severity: string, detail: string) {
         this.messageService.add({ severity, summary: severity.toUpperCase(), detail, life: 5000 });
     }
 
-    originalOrder = (a: any, b: any): number => {
-        return 0;
-    }
 }

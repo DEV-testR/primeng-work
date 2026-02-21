@@ -181,7 +181,7 @@ export class DocumentFormComponent implements OnInit {
 
                 this.router.navigate(['../flow'], {
                     relativeTo: this.route,
-                    state: { flowDoc: response, }
+                    state: { documentForm: response, }
                 }).then(() => console.log('open flow document'));
 
                 /*this.messageService.add({

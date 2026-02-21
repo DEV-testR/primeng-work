@@ -16,6 +16,10 @@ export class DocumentService {
         return this.http.post<any>(`${this.API_URL}/search`, payload);
     }
 
+    searchById(id : String): Observable<any> {
+        return this.http.get<any>(`${this.API_URL}/search/${id}`);
+    }
+
     delete(id : String): Observable<any> {
         return this.http.delete(`${this.API_URL}/delete/${id}`);
     }
@@ -26,6 +30,10 @@ export class DocumentService {
 
     generateFlow(payload: any): Observable<any> {
         return this.http.post<any>(`${this.API_URL}/generate-flow`, payload);
+    }
+
+    submitFlow(payload: any): Observable<any> {
+        return this.http.post<any>(`${this.API_URL}/submit-flow`, payload);
     }
 
 }

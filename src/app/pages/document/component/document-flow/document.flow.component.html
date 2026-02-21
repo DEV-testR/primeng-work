@@ -1,71 +1,117 @@
 <toast-messages/>
 <p-fluid>
-    <div class="flex flex-col gap-5">
-        <p-panel header="Approval Steps" [toggleable]="true" [collapsed]="false">
-            <p-stepper [value]="1">
-                <p-step-list>
-                    <p-step *ngFor="let step of flowDoc?.steps" [value]="step.stepno">
-                        <div class="flex flex-col">
-                            <span class="font-bold">Step {{ step.stepno }}</span>
-                            <small *ngIf="step.emmanInfo">
-                                {{ step.emmanInfo.code }} - {{ step.emmanInfo.name }}
-                            </small>
-                            <small class="text-primary" *ngIf="step.actionType">{{ step.actionType }}</small>
-                        </div>
-                    </p-step>
-                </p-step-list>
-            </p-stepper>
-        </p-panel>
+    <div class="flex flex-grow flex-col justify-between gap-8">
+        <div class="flex flex-col gap-5">
+            <p-panel header="Flow Steps" [toggleable]="true" [collapsed]="false">
+                <p-stepper [value]="flowDoc?.activeStep">
+                    <p-step-list>
+                        <p-step *ngFor="let step of flowDoc?.steps; let i = index" [value]="step.stepno" class="flex flex-row flex-auto gap-2">
+                            <ng-template #content let-value="value">
+                                <div class="flex flex-col items-center gap-2">
+                                     <span *ngIf="step.actionDate" class="text-[10px] text-[var(--text-color)] opacity-70 truncate">
+                                                {{ step.actionDate | date:appProperties.dateTimeFormat }}
+                                     </span>
+                                    <span class="rounded-full relative w-[24px] h-[24px] inline-flex items-center justify-center border-2 transition-colors transition-duration-300"
+                                          [ngClass]="{
+                                              'border-primary': step.stepno <= flowDoc?.activeStep,
+                                              'border-300 bg-highlight text-500': step.stepno > flowDoc?.activeStep
+                                          }">
+                                        <i [class]="resolveStepIcon(step)" style="font-size: 0.8rem"></i>
+                                    </span>
 
-        <p-panel header="Document Information" [toggleable]="true" [collapsed]="false">
-            <div class="flex flex-col gap-4 p-2">
-                <ng-container *ngFor="let dataFld of flowContentKeys">
-                    <div *ngIf="flowContent[dataFld]" class="flex gap-4">
-                        <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }} : </span>
-                        <ng-container [ngSwitch]="flowContentDataType.get(dataFld)">
-                            <span *ngSwitchCase="'DATE'" class="font-medium">
-                                {{ flowContent[dataFld] | date:appProperties.dateFormat }}
-                            </span>
-                            <span *ngSwitchCase="'BOOLEAN'" class="font-medium">
-                                {{ flowContent[dataFld] | yesNo }}
-                            </span>
-                            <span *ngSwitchCase="'DECIMAL'" class="font-medium">
-                                {{ flowContent[dataFld] | number:'1.2-2' }}
-                            </span>
-                            <ng-template [ngSwitchCase]="'LIST'">
-                                <div *ngIf="flowContent[dataFld].length > 0;" class="col-span-full flex flex-col gap-1">
-                                    <div *ngFor="let file of flowContent[dataFld]"
-                                         class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
-                                        <div class="flex items-center gap-2">
-                                            <i class="pi pi-file text-primary"></i>
-                                            <span class="text-sm">{{ file.fileName }}</span>
+                                    <div class="flex items-center gap-3 bg-[var(--surface-overlay)] border border-[var(--surface-border)] p-3 rounded-[var(--content-border-radius)] shadow-sm min-w-[170px]">
+                                        <div class="relative w-10 h-10">
+                                            <img [ngSrc]="'assets/defaultAvatar.png'"
+                                                 fill
+                                                 class="rounded-full object-cover"
+                                                 alt="avatar">
                                         </div>
-                                        <p-button icon="pi pi-download"
-                                                  [rounded]="true"
-                                                  [text]="true"
-                                                  severity="primary"
-                                                  size="small"
-                                                  pTooltip="Download"
-                                                  (onClick)="downloadFile(file)">
-                                        </p-button>
+                                        <div class="flex flex-col gap-1 overflow-hidden items-start text-left">
+                                            <span class="text-[10px] text-[var(--text-color)] opacity-70 truncate">
+                                                {{ step.actionType }}
+                                            </span>
+                                            <span class="text-sm font-bold text-[var(--text-color)] truncate">
+                                                {{ step.emmanInfo.name }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                <span class="font-medium">&nbsp;{{ flowContent[dataFld] | date:appProperties.dateFormat }}</span>
                             </ng-template>
-                            <span *ngSwitchDefault class="font-medium">
-                                {{ flowContent[dataFld] }}
-                            </span>
-                        </ng-container>
-                    </div>
-                </ng-container>
-            </div>
-        </p-panel>
+                        </p-step>
+                    </p-step-list>
+                </p-stepper>
+            </p-panel>
+            <p-panel header="Document Information" [toggleable]="true" [collapsed]="false">
+                <div class="ml-7 grid grid-cols-[150px_1fr] gap-x-4 gap-y-4 p-2">
+                    <ng-container *ngFor="let dataFld of flowContentKeys">
+                        <ng-container *ngIf="flowContent[dataFld]">
+                            <ng-container [ngSwitch]="flowContentDataType.get(dataFld)">
 
-        <div class="fixed bottom-16 right-10">
-            <div class="flex justify-end gap-2">
-                <p-button label="Cancel" (onClick)="pageBack()" severity="danger" [outlined]="true"></p-button>
-                <p-button label="Submit" (onClick)="ngSubmit()"></p-button>
-            </div>
+                                <ng-container *ngSwitchCase="'OBJECT'">
+                                    <!--Not Show Data-->
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'DATE'">
+                                    <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                    <span class="font-medium text-sm">
+                                        {{ (flowContent[dataFld] && flowContent[dataFld] !== '') ? (flowContent[dataFld] | date:appProperties.dateFormat) : '' }}
+                                    </span>
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'BOOLEAN'">
+                                    <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                    <span class="font-medium text-sm">{{ flowContent[dataFld] | yesNo }}</span>
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'DECIMAL'">
+                                    <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                    <span class="font-medium text-sm">{{ flowContent[dataFld] | number:'1.2-2' }}</span>
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'LIST'">
+                                    <span class="text-sm text-secondary" *ngIf="flowContent[dataFld].length > 0">
+                                        {{ fieldLabels[dataFld] || dataFld }}
+                                    </span>
+
+                                    <div *ngIf="flowContent[dataFld].length > 0" class="flex flex-col gap-2">
+                                        <div *ngFor="let file of flowContent[dataFld]" class="w-64 flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
+
+                                            <div class="flex items-center gap-2 overflow-hidden flex-1 mr-2"
+                                                 [pTooltip]="file.fileName"
+                                                 tooltipPosition="top">
+                                                <i class="pi pi-file text-primary shrink-0"></i>
+                                                <span class="text-sm truncate font-medium text-gray-700">
+                                                    {{ file.fileName }}
+                                                </span>
+                                            </div>
+
+                                            <p-button icon="pi pi-download"
+                                                      [rounded]="true"
+                                                      [text]="true"
+                                                      severity="primary"
+                                                      size="small"
+                                                      (onClick)="downloadFile(file)"
+                                                      class="shrink-0">
+                                            </p-button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <ng-container *ngSwitchDefault>
+                                    <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                    <span class="font-medium text-sm">{{ flowContent[dataFld] }}</span>
+                                </ng-container>
+
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </p-panel>
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Back" (onClick)="pageBack()" [loading]="loading" [outlined]="true"></p-button>
+            <p-button label="Submit" (onClick)="ngSubmit()" [loading]="loading" [disabled]="!isActiveStep" ></p-button>
         </div>
     </div>
+
 </p-fluid>
