@@ -1,12 +1,6 @@
 import {LookupItem} from "./lookup.model";
 
 export interface DocumentCriteria {
-    /*private Long emId;
-    private String documentNo;
-    private String documentType;
-    private String documentStatus;
-    private Date dateVF;
-    private Date dateVT;*/
     emId: string
     documentNo: string;
     documentType: string;
@@ -16,12 +10,6 @@ export interface DocumentCriteria {
 }
 
 export interface DocumentData {
-    /*private Long id;
-    private String documentNo;
-    private String documentType;
-    private int documentStatus;
-    private Employee emId;
-    private Date dateWork;*/
     id: string;
     documentNo: string;
     documentType: string;
@@ -29,5 +17,10 @@ export interface DocumentData {
     documentStatusLabel : string;
     documentStatusSeverity : string;
     emId: LookupItem;
-    documentDate: Date;
+    dateWork: Date;
+}
+
+export interface StepGroup {
+    stepno: number;
+    actions: any[]; // หรือเปลี่ยน any เป็น Type ของ Step Entity คุณ
 }

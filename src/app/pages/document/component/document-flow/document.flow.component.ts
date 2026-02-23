@@ -24,6 +24,7 @@ import {MessageService} from "primeng/api";
 import {ToastMessagesComponent} from "../../../../conponents/toast-messages/toast-messages.component";
 import {YesNoPipe} from "../../../../pipes/yes-no.pipe";
 import {DocumentService} from "../../../../services/document.service";
+import {StepGroup} from "../../../../models/document.model";
 
 @Component({
     selector: 'app-document-flow',
@@ -89,10 +90,15 @@ export class DocumentFlowComponent implements OnInit {
         }
 
         // Build Data FlowContent Info
-        this.isAllowEdit = this.documentForm.documentStatusVal === 0;
+        this.isAllowEdit = this.documentForm.documentStatus === 0;
         this.isActiveStep = this.flowDoc.isActiveStep;
         this.flowContent = { ...this.documentForm };
-        delete this.flowContent['documentStatusVal']
+        delete this.flowContent['id'];
+        delete this.flowContent['tmpts'];
+        delete this.flowContent['version'];
+        delete this.flowContent['updateBy'];
+        delete this.flowContent['updateDate'];
+
         this.flowContentKeys =  Object.keys(this.flowContent);
         for (let fldKey of this.flowContentKeys) {
             const value = this.flowContent[fldKey];
@@ -176,23 +182,38 @@ export class DocumentFlowComponent implements OnInit {
     }
 
     resolveStepIcon(step: any): string {
-        // 1. ถ้าเป็น Step 0 (Requester) ให้เป็น Check เสมอ
         if (step.stepno === 0) {
             return 'pi pi-check';
         }
 
-        // 2. ถ้ามีวันที่ดำเนินการแล้ว (ดำเนินการเสร็จสิ้น)
         if (step.actionDate) {
             return 'pi pi-check';
         }
 
-        // 3. ถ้าเป็น Step ปัจจุบัน แต่ยังไม่มีการ Action (รออนุมัติ)
         if (step.stepno === this.flowDoc?.activeStep) {
             return 'pi pi-hourglass';
         }
 
-        // 4. กรณีอื่นๆ (Step ในอนาคต)
         return 'pi pi-lock text-400';
+    }
+
+    get groupedSteps(): StepGroup[] {
+        if (!this.flowDoc?.steps) return [];
+
+        const groups = this.flowDoc.steps.reduce((acc: Record<number, StepGroup>, curr: StepGroup) => {
+            const key = curr.stepno;
+            if (!acc[key]) {
+                acc[key] = {
+                    stepno: key,
+                    actions: []
+                };
+            }
+            acc[key].actions.push(curr);
+            return acc;
+        }, {});
+
+        // ระบุ Type ตรงนี้เพื่อให้ TypeScript รู้ว่า group คือ StepGroup
+        return (Object.values(groups) as StepGroup[]).sort((a, b) => a.stepno - b.stepno);
     }
 
     private showToast(severity: string, detail: string) {

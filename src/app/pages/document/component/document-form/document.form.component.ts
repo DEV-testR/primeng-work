@@ -169,7 +169,6 @@ export class DocumentFormComponent implements OnInit {
         }
 
         const payload = { ...requestForm.value };
-        payload.documentStatus = 1;
         payload.documentType = 'TIME';
         this.loading = true;
         requestForm.disable();

@@ -67,7 +67,7 @@
                     <td>{{ doc.documentNo }}</td>
                     <td>{{ doc.emId.code }}</td>
                     <td>{{ doc.emId.name }}</td>
-                    <td>{{ doc.documentDate | date: appProperties.dateFormat }}</td>
+                    <td>{{ doc.dateWork | date: appProperties.dateFormat }}</td>
                     <td>
                         <span [class]="'status-badge status-' + doc.documentStatusSeverity">
                             {{ doc.documentStatusLabel }}

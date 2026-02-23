@@ -2,13 +2,13 @@
 <p-fluid>
     <div class="flex flex-grow flex-col justify-between gap-8">
         <div class="flex flex-col gap-5">
-            <p-panel header="Flow Steps" [toggleable]="true" [collapsed]="false">
+            <!--<p-panel header="Flow Steps" [toggleable]="true" [collapsed]="false">
                 <p-stepper [value]="flowDoc?.activeStep">
                     <p-step-list>
                         <p-step *ngFor="let step of flowDoc?.steps; let i = index" [value]="step.stepno" class="flex flex-row flex-auto gap-2">
                             <ng-template #content let-value="value">
                                 <div class="flex flex-col items-center gap-2">
-                                     <span *ngIf="step.actionDate" class="text-[10px] text-[var(--text-color)] opacity-70 truncate">
+                                     <span *ngIf="step.actionDate" class="text-[10px] text-[var(&#45;&#45;text-color)] opacity-70 truncate">
                                                 {{ step.actionDate | date:appProperties.dateTimeFormat }}
                                      </span>
                                     <span class="rounded-full relative w-[24px] h-[24px] inline-flex items-center justify-center border-2 transition-colors transition-duration-300"
@@ -19,7 +19,7 @@
                                         <i [class]="resolveStepIcon(step)" style="font-size: 0.8rem"></i>
                                     </span>
 
-                                    <div class="flex items-center gap-3 bg-[var(--surface-overlay)] border border-[var(--surface-border)] p-3 rounded-[var(--content-border-radius)] shadow-sm min-w-[170px]">
+                                    <div class="flex items-center gap-3 bg-[var(&#45;&#45;surface-overlay)] border border-[var(&#45;&#45;surface-border)] p-3 rounded-[var(&#45;&#45;content-border-radius)] shadow-sm min-w-[170px]">
                                         <div class="relative w-10 h-10">
                                             <img [ngSrc]="'assets/defaultAvatar.png'"
                                                  fill
@@ -27,12 +27,59 @@
                                                  alt="avatar">
                                         </div>
                                         <div class="flex flex-col gap-1 overflow-hidden items-start text-left">
-                                            <span class="text-[10px] text-[var(--text-color)] opacity-70 truncate">
+                                            <span class="text-[10px] text-[var(&#45;&#45;text-color)] opacity-70 truncate">
                                                 {{ step.actionType }}
                                             </span>
-                                            <span class="text-sm font-bold text-[var(--text-color)] truncate">
+                                            <span class="text-sm font-bold text-[var(&#45;&#45;text-color)] truncate">
                                                 {{ step.emmanInfo.name }}
                                             </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-step>
+                    </p-step-list>
+                </p-stepper>
+            </p-panel>-->
+            <p-panel header="Flow Steps" [toggleable]="true" [collapsed]="false">
+                <p-stepper [value]="flowDoc?.activeStep">
+                    <p-step-list>
+                        <p-step *ngFor="let group of groupedSteps; let i = index" [value]="group.stepno" class="flex flex-row flex-auto gap-2">
+                            <ng-template #content let-value="value">
+                                <div class="flex flex-col items-center gap-2">
+                                    <span *ngIf="group.actions[0].actionDate" class="text-[9px] text-[var(--text-color)] opacity-60">
+                                         {{ group.actions[0].actionDate | date:appProperties.dateTimeFormat }}
+                                    </span>
+                                    <span class="rounded-full relative w-[24px] h-[24px] inline-flex items-center justify-center border-2 transition-colors transition-duration-300"
+                                          [ngClass]="{
+                                              'border-primary': group.stepno <= flowDoc?.activeStep,
+                                              'border-300 bg-highlight text-500': group.stepno > flowDoc?.activeStep
+                                          }">
+                                        <i [class]="resolveStepIcon(group.actions[0])" style="font-size: 0.8rem"></i>
+                                    </span>
+                                    <div class="flex flex-col gap-2">
+                                        <div *ngFor="let action of group.actions"
+                                             class="flex items-center gap-3 bg-[var(--surface-overlay)] border border-[var(--surface-border)] p-3 rounded-[var(--content-border-radius)] shadow-sm min-w-[170px]">
+
+                                            <div class="relative w-10 h-10">
+                                                <img [ngSrc]="'assets/defaultAvatar.png'"
+                                                     fill
+                                                     class="rounded-full object-cover"
+                                                     alt="avatar">
+                                            </div>
+                                            <div class="flex flex-col gap-1 overflow-hidden items-start text-left">
+                                                <div class="flex flex-col">
+                                                <span class="text-[10px] text-[var(--text-color)] opacity-70 truncate font-bold">
+                                                    {{ action.actionType }}
+                                                </span>
+                                                <!--<span *ngIf="action.actionDate" class="text-[9px] text-[var(&#45;&#45;text-color)] opacity-60">
+                                                    {{ action.actionDate | date:appProperties.dateTimeFormat }}
+                                                </span>-->
+                                                </div>
+                                                <span class="text-sm font-bold text-[var(--text-color)] truncate">
+                                                    {{ action.emmanInfo.name }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
