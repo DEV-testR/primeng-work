@@ -1,9 +1,12 @@
 import {Component} from '@angular/core';
 import {StatsWidget} from './components/statswidget';
+import {
+    NotificationsWidgetComponent
+} from "../../conponents/app-notifications-widget/app.notification.widget.component";
 
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget],
+    imports: [StatsWidget, NotificationsWidgetComponent],
     template: `
         <div class="grid grid-cols-12 gap-8">
             <app-stats-widget class="contents" />
@@ -13,7 +16,7 @@ import {StatsWidget} from './components/statswidget';
             </div>
             <div class="col-span-12 xl:col-span-6">
                 <!--<app-revenue-stream-widget />-->
-                <!--<app-notifications-widget />-->
+                <app-notifications-widget/>
             </div>
         </div>
     `

@@ -1,26 +1,21 @@
-<button type="button"
-        (click)="toggle($event)"
-        class="layout-topbar-action">
-    <i class="pi pi-user"></i>
-    <span>Profile</span>
-</button>
+<div class="flex items-center">
+    <button pButton
+            type="button"
+            class="p-button-rounded p-button-text p-button-plain layout-topbar-action"
+            (click)="menu.toggle($event)">
+        <i class="pi pi-user"></i>
+        <span class="ml-2 hidden md:inline">{{ user?.fullName || 'User' }}</span>
+    </button>
 
-<p-popover #op [style]="{ 'border-radius': '1rem' }">
-    <div class="w-max md:max-w-[20vw] max-h-[70vh] overflow-auto">
-        <button class="rounded-border border-b border-surface p-3 flex items-center gap-2 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer transition-colors bg-transparent">
-            <img ngSrc="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" width="32" height="32" style="vertical-align: middle" alt=""/>
-            <span class="inline-flex flex-col text-left ">
-                <span class="truncate w-[10rem] font-bold white-space-nowrap text-overflow-ellipsis">{{ user?.fullName || user?.email || 'N/A' }}</span>
-                <span class="text-sm">Admin</span>
-            </span>
-        </button>
-        <a pRipple class="rounded-border p-3 flex items-center p-menu-item-link hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer transition-colors bg-transparent">
-            <span class="pi pi-cog"></span>
-            <span class="ml-2">Setting</span>
-        </a>
-        <a pRipple (click)="ngLogoutClick()" class="rounded-border p-3 flex items-center p-menu-item-link hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer transition-colors bg-transparent">
-            <span class="pi pi-sign-out"></span>
-            <span class="ml-2">Logout</span>
-        </a>
-    </div>
-</p-popover>
+    <p-menu #menu [model]="items" [popup]="true" [style]="{'min-width': '200px'}">
+        <ng-template pTemplate="start">
+            <div class="p-3 border-b border-surface flex items-center gap-2">
+                <i class="pi pi-user-circle text-2xl text-primary"></i>
+                <div class="flex flex-col overflow-hidden">
+                    <span class="font-bold truncate">{{ user?.fullName || 'Guest' }}</span>
+                    <span class="text-xs text-secondary truncate">{{ user?.email }}</span>
+                </div>
+            </div>
+        </ng-template>
+    </p-menu>
+</div>

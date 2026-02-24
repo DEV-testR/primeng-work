@@ -65,6 +65,10 @@ export class DocumentComponent implements OnInit {
 
     ngOnInit(): void {
         this.initForm();
+        const id = history.state.id;
+        if (id) {
+            this.ngSearchItemById(id);
+        }
     }
 
     initForm() {

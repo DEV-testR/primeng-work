@@ -8,8 +8,8 @@ import {UserMenuTopbar} from "../user-menu-topbar/user-menu-topbar.component";
 import {BadgeModule} from 'primeng/badge';
 import {OverlayBadgeModule} from "primeng/overlaybadge";
 import {AppConfigurator} from "../../layout/component/app.configurator";
-import {NotiInboxTopbar} from "../noti-inbox-topbar/noti-inbox-topbar.component";
 import {appProperties} from "../../../app.properties";
+import {NotificationBellComponent} from "../app-notification-bell/app.notification.bell.component";
 
 @Component({
     selector: 'app-topbar',
@@ -19,7 +19,7 @@ import {appProperties} from "../../../app.properties";
         StyleClassModule,
         UserMenuTopbar,
         BadgeModule,
-        OverlayBadgeModule, AppConfigurator, NotiInboxTopbar],
+        OverlayBadgeModule, AppConfigurator, NotificationBellComponent],
     templateUrl: `./app-topbar.component.html`
 })
 export class AppTopbar {

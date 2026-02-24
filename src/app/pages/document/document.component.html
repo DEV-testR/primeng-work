@@ -57,13 +57,20 @@
                     <th>Name</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th style="width: 5rem"></th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-doc let-i="rowIndex">
                 <tr>
-                    <td>{{ i + 1 }}</td>
+                    <td>
+                        <div class="flex gap-8 items-center">
+                            <span>{{ i + 1 }}</span>
+                            <div>
+                                <p-button icon="pi pi-pencil rounded" text severity="info" (click)="ngSearchItemById(doc.id)"></p-button>
+                                <p-button icon="pi pi-trash rounded" text severity="warn" (click)="ngDelete(doc)"></p-button>
+                            </div>
+                        </div>
+                    </td>
                     <td>{{ doc.documentNo }}</td>
                     <td>{{ doc.emId.code }}</td>
                     <td>{{ doc.emId.name }}</td>
@@ -72,16 +79,6 @@
                         <span [class]="'status-badge status-' + doc.documentStatusSeverity">
                             {{ doc.documentStatusLabel }}
                         </span>
-                    </td>
-                    <td>
-                        <div class="flex gap-2">
-                            <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info" (click)="ngSearchItemById(doc.id)"></p-button>
-                            <p-button icon="pi pi-trash"
-                                      [rounded]="true"
-                                      [text]="true" severity="warn"
-                                      (click)="ngDelete(doc)">
-                            </p-button>
-                        </div>
                     </td>
                 </tr>
             </ng-template>
