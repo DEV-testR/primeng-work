@@ -8,6 +8,7 @@ import {FilesUploadService} from "../../services/fileupload.service";
 import {FileSaverService} from 'ngx-filesaver';
 import {ToastMessagesComponent} from "../toast-messages/toast-messages.component";
 import {HttpEvent, HttpEventType} from "@angular/common/http";
+import {Button} from "primeng/button";
 
 export interface FileUploadResult {
     fileName: string;
@@ -23,7 +24,8 @@ export interface FileUploadResult {
         CommonModule,
         FileUploadModule,
         ToastModule,
-        ToastMessagesComponent
+        ToastMessagesComponent,
+        Button
     ],
     templateUrl: `./files-upload.component.html`,
     providers: [

@@ -111,6 +111,11 @@ export class DocumentFlowComponent implements OnInit {
         delete this.flowContent['version'];
         delete this.flowContent['updateBy'];
         delete this.flowContent['updateDate'];
+        delete this.flowContent['documentStatusSeverity'];
+        if (this.flowContent.hasOwnProperty('documentStatusLabel')) {
+            this.flowContent['documentStatus'] = this.flowContent['documentStatusLabel'];
+            delete this.flowContent['documentStatusLabel'];
+        }
 
         this.flowContentKeys =  Object.keys(this.flowContent);
         for (let fldKey of this.flowContentKeys) {

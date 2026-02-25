@@ -33,6 +33,13 @@
     [maxFileSize]="MAX_SIZE"
     mode="advanced"
     [disabled]="disabled">
+    <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-uploadCallback="uploadCallback" let-clearCallback="clearCallback">
+        <div class="flex flex-wrap justify-between flex-grow gap-2">
+            <p-button (onClick)="chooseCallback()" icon="pi pi-plus" label="Choose" size="small"></p-button>
+            <p-button (onClick)="uploadCallback()" icon="pi pi-upload" label="Upload" severity="success" size="small" [disabled]="!files || files.length === 0"></p-button>
+            <p-button (onClick)="clearCallback()" icon="pi pi-times" label="Cancel" severity="danger" size="small" [disabled]="!files || files.length === 0"></p-button>
+        </div>
+    </ng-template>
 
     <ng-template pTemplate="content">
         <ul class="list-none p-0 m-0" *ngIf="uploadedFiles.length">
