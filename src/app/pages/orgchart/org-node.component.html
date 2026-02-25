@@ -10,11 +10,13 @@
         <div class="h-1.5 w-full bg-[var(--primary-color)]"></div>
 
         <div class="p-3 flex items-center gap-3">
-            <img [ngSrc]="node.data?.imageUrl || 'assets/defaultAvatar.png'"
-                 width="40"
-                 height="40"
-                 class="rounded-full object-cover border p-0.5"
-                 alt="avatar">
+            <div class="relative w-10 h-10">
+                <img [ngSrc]="node.data?.imageUrl || 'assets/defaultAvatar.png'"
+                     alt="avatar"
+                     class="rounded-full object-cover"
+                     fill
+                >
+            </div>
             <div class="flex flex-col text-left overflow-hidden">
                 <span class="text-sm font-bold text-[var(--text-color)] truncate">
                     {{ node.label }}

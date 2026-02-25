@@ -1,11 +1,11 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { NotificationService } from '../../services/notification.service';
-import { UserService } from '../../services/user.service';
-import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { BadgeModule } from 'primeng/badge';
-import { ScrollPanelModule } from 'primeng/scrollpanel';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {NotificationService} from '../../services/notification.service';
+import {UserService} from '../../services/user.service';
+import {CommonModule} from '@angular/common';
+import {ButtonModule} from 'primeng/button';
+import {BadgeModule} from 'primeng/badge';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
+import {Router} from "@angular/router";
 import {appProperties} from "../../../app.properties";
 
 @Component({
@@ -75,7 +75,6 @@ export class NotificationsWidgetComponent implements OnInit {
 
     constructor(private notificationService: NotificationService
         , private router: Router
-        , private route: ActivatedRoute
         , private userService: UserService) {
     }
 
@@ -106,11 +105,10 @@ export class NotificationsWidgetComponent implements OnInit {
         }
 
         if (target) {
-            const fullPath = `/${appProperties.rootPath}/${target}`;
+            const fullPath = `/${appProperties.rootPath}/${target}/${item.parentId}`;
             this.router.navigate([fullPath], {
-                relativeTo: this.route,
                 state: { id: item.parentId }
-            }).then(() => console.log('Navigated to:', target));
+            }).then(() => console.log('Navigated to:', fullPath));
         }
     }
 

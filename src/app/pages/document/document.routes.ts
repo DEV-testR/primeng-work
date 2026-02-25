@@ -15,7 +15,17 @@ export default [
         data: { breadcrumb: 'Form' }
     },
     {
+        path: 'form/:id',
+        component: DocumentFormComponent,
+        data: { breadcrumb: 'Form' }
+    },
+    {
         path: 'flow',
+        component: DocumentFlowComponent,
+        data: { breadcrumb: 'Flow' }
+    },
+    {
+        path: 'flow/:id',
         component: DocumentFlowComponent,
         data: { breadcrumb: 'Flow' }
     },

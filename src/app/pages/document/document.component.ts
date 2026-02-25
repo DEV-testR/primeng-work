@@ -64,11 +64,8 @@ export class DocumentComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        console.log('ngOnInit');
         this.initForm();
-        const id = history.state.id;
-        if (id) {
-            this.ngSearchItemById(id);
-        }
     }
 
     initForm() {
@@ -135,7 +132,7 @@ export class DocumentComponent implements OnInit {
             next: (res) => {
                 this.loading = false;
                 const documentState = (res.hasOwnProperty('flowDoc')) ? 'flow' : 'form'
-                this.router.navigate([documentState], {
+                this.router.navigate([`${documentState}/${res.id}`], {
                     relativeTo: this.route,
                     state: { documentForm: res, }
                 }).then(() => console.log(`open ${documentState} document`));

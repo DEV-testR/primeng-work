@@ -1,20 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Step, StepList, Stepper} from "primeng/stepper";
-import {Fluid} from "primeng/fluid";
 import {Panel} from "primeng/panel";
 import {Button} from "primeng/button";
-import {
-    DatePipe,
-    DecimalPipe,
-    NgClass,
-    NgForOf,
-    NgIf,
-    NgOptimizedImage,
-    NgSwitch,
-    NgSwitchCase,
-    NgSwitchDefault
-} from "@angular/common";
+import {DatePipe, DecimalPipe, NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from "@angular/common";
 import {appProperties} from "../../../../../app.properties";
 import {Tooltip} from "primeng/tooltip";
 import {FileUploadResult} from "../../../../conponents/files-upload/files-upload.component";
@@ -32,7 +21,6 @@ import {StepGroup} from "../../../../models/document.model";
         Stepper,
         StepList,
         Step,
-        Fluid,
         Panel,
         Button,
         DatePipe,
@@ -45,25 +33,26 @@ import {StepGroup} from "../../../../models/document.model";
         YesNoPipe,
         DecimalPipe,
         NgSwitchDefault,
-        NgOptimizedImage,
         NgClass
     ],
     templateUrl: './document.flow.component.html',
     styleUrls: ['./document.flow.component.scss'],
     providers: [
         MessageService
-    ]
+    ],
 })
 export class DocumentFlowComponent implements OnInit {
     protected readonly appProperties = appProperties;
     loading: boolean = false;
     isAllowEdit:boolean = false;
     isActiveStep: boolean = false;
+    stepActive: any;
     flowDoc: any;
     flowContent: any;
     flowContentKeys: any;
     flowContentDataType: Map<string, string> = new Map();
     documentForm: any;
+    expandedSteps = new Set<number>();
     fieldLabels: { [key: string]: string } = {
         documentNo: 'Document No.',
         emId: 'Employee',
@@ -82,16 +71,40 @@ export class DocumentFlowComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.documentForm = history.state.documentForm;
-        this.flowDoc = this.documentForm.flowDoc;
-        if (!this.flowDoc) {
-            this.router.navigate(['/document'], {relativeTo: this.route}).then(() => console.log('open document page'));
+        const id = history.state.id;
+        if (history.state.documentForm) {
+            this.documentForm = history.state.documentForm;
+            this.ngProcessDocumentData();
+        } else if (id) {
+            this.loading = true;
+            this.documentService.searchById(id).subscribe({
+                next: (res) => {
+                    this.loading = false;
+                    this.documentForm = res;
+                    this.ngProcessDocumentData();
+                },
+                error: (err) => {
+                    this.loading = false;
+                    this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
+                }
+            });
+        } else {
+            this.router.navigate(['/document'], { relativeTo: this.route }).then();
+        }
+    }
+
+    ngProcessDocumentData() {
+        if (!this.documentForm || !this.documentForm.flowDoc) {
+            this.router.navigate(['/document'], { relativeTo: this.route }).then();
             return;
         }
 
-        // Build Data FlowContent Info
+        this.flowDoc = this.documentForm.flowDoc;
         this.isAllowEdit = this.documentForm.documentStatus === 0;
+        this.stepActive = this.flowDoc.stepActive;
         this.isActiveStep = this.flowDoc.isActiveStep;
+
+        // Build Data FlowContent Info
         this.flowContent = { ...this.documentForm };
         delete this.flowContent['id'];
         delete this.flowContent['tmpts'];
@@ -139,11 +152,12 @@ export class DocumentFlowComponent implements OnInit {
     }
 
     pageBack() {
-        const backState = (this.isAllowEdit) ? '../form' : '../';
-        this.router.navigate([backState], {
+        const backState = (this.isAllowEdit) ? 'document/form' : 'document';
+        const fullPath = `/${appProperties.rootPath}/${backState}`;
+        this.router.navigate([fullPath], {
             relativeTo: this.route,
             state: { documentForm: this.documentForm, }
-        }).then(() => console.log('open form document'));
+        }).then(() => console.log('Navigated to:', fullPath));
     }
 
     ngSubmit() {
@@ -216,8 +230,17 @@ export class DocumentFlowComponent implements OnInit {
         return (Object.values(groups) as StepGroup[]).sort((a, b) => a.stepno - b.stepno);
     }
 
-    private showToast(severity: string, detail: string) {
+    showToast(severity: string, detail: string) {
         this.messageService.add({ severity, summary: severity.toUpperCase(), detail, life: 5000 });
+    }
+
+    toggleStep(index: number) {
+        console.log('toggle step', index);
+        if (this.expandedSteps.has(index)) {
+            this.expandedSteps.delete(index);
+        } else {
+            this.expandedSteps.add(index);
+        }
     }
 
 }
