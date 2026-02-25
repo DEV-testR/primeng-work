@@ -108,6 +108,7 @@ export class NotificationsWidgetComponent implements OnInit {
         if (target) {
             const fullPath = `/${appProperties.rootPath}/${target}`;
             this.router.navigate([fullPath], {
+                relativeTo: this.route,
                 state: { id: item.parentId }
             }).then(() => console.log('Navigated to:', target));
         }
