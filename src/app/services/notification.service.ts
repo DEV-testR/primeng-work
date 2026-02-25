@@ -23,7 +23,6 @@ export class NotificationService {
             const connect = () => {
                 const token = this.authService.getAccessToken();
 
-                // ส่งทั้ง Header และ Query Param เพื่อความชัวร์
                 eventSource = new EventSourcePolyfill(
                     `${this.API_URL}/stream/${userId}?token=${token}`,
                     {
@@ -44,10 +43,8 @@ export class NotificationService {
                         // ถ้าเจอ 401 (Unauthorized) ให้พยายามรีเฟรช Token และเชื่อมต่อใหม่
                         if (error.status === 401) {
                             console.log('Token expired, attempting to reconnect SSE...');
-                            // รอสัก 1 วินาทีแล้วค่อยต่อใหม่เพื่อให้ AuthService จัดการ Token ใหม่เสร็จก่อน
                             setTimeout(() => connect(), 1000);
                         } else {
-                            // ถ้าเป็น Error อื่นๆ ให้ส่ง Error ออกไป
                             observer.error(error);
                         }
                     });
@@ -55,8 +52,6 @@ export class NotificationService {
             };
 
             connect();
-
-            // คืนค่าฟังก์ชันสำหรับปิดท่อเมื่อไม่ได้ใช้ Component แล้ว
             return () => {
                 if (eventSource) {
                     eventSource.close();
