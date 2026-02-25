@@ -14,8 +14,6 @@ import {appProperties} from "../../app.properties";
 export class AuthService {
     private readonly API_URL = `${appProperties.BASE_API_URL}/api/auth`;
     private readonly TOKEN_KEY = 'access_token';
-    // private accessToken: string | null = null;
-
     constructor(private http: HttpClient) {
     }
 
