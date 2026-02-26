@@ -6,7 +6,7 @@
                 <p-panel header="Flow Steps" class="border-none" [toggleable]="true" [collapsed]="false">
                     <p-stepper [value]="flowDoc?.activeStep">
                         <p-step-list style="align-items: flex-start">
-                            <p-step *ngFor="let group of groupedSteps; let i = index"
+                            <p-step *ngFor="let group of groupedStepsData; let i = index"
                                     [value]="group.stepno"
                                     style="align-items: flex-start"
                                     class="flex flex-row flex-auto gap-2 min-h-[13.5dvh]">
@@ -75,25 +75,25 @@
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'DATE'">
-                                        <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                        <span class="text-sm text-secondary">{{ dataFld }}</span>
                                         <span class="font-medium text-sm">
                                         {{ (flowContent[dataFld] && flowContent[dataFld] !== '') ? (flowContent[dataFld] | date:appProperties.dateFormat) : '' }}
                                     </span>
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'BOOLEAN'">
-                                        <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                        <span class="text-sm text-secondary">{{ dataFld }}</span>
                                         <span class="font-medium text-sm">{{ flowContent[dataFld] | yesNo }}</span>
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'DECIMAL'">
-                                        <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                        <span class="text-sm text-secondary">{{ dataFld }}</span>
                                         <span class="font-medium text-sm">{{ flowContent[dataFld] | number:'1.2-2' }}</span>
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'LIST'">
                                     <span class="text-sm text-secondary" *ngIf="flowContent[dataFld].length > 0">
-                                        {{ fieldLabels[dataFld] || dataFld }}
+                                        {{ dataFld }}
                                     </span>
 
                                         <div *ngIf="flowContent[dataFld].length > 0" class="flex flex-col gap-2">
@@ -121,7 +121,7 @@
                                     </ng-container>
 
                                     <ng-container *ngSwitchDefault>
-                                        <span class="text-sm text-secondary">{{ fieldLabels[dataFld] || dataFld }}</span>
+                                        <span class="text-sm text-secondary">{{ dataFld }}</span>
                                         <span class="font-medium text-sm">{{ flowContent[dataFld] }}</span>
                                     </ng-container>
 

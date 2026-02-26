@@ -53,13 +53,7 @@ export class DocumentFlowComponent implements OnInit {
     flowContentDataType: Map<string, string> = new Map();
     documentForm: any;
     expandedSteps = new Set<number>();
-    fieldLabels: { [key: string]: string } = {
-        documentNo: 'Document No.',
-        emId: 'Employee',
-        dateWork: 'Work Date',
-        reasonId: 'Reason',
-        remark: 'Remark'
-    };
+    groupedStepsData: StepGroup[] = [];
 
     constructor(
         private router: Router,
@@ -153,7 +147,26 @@ export class DocumentFlowComponent implements OnInit {
             }
         }
 
+        this.updateGroupedSteps();
         console.log('FlowDoc:', this.flowDoc);
+    }
+
+    updateGroupedSteps() {
+        if (!this.flowDoc?.steps) {
+            this.groupedStepsData = [];
+            return;
+        }
+
+        const groups = this.flowDoc.steps.reduce((acc: Record<number, StepGroup>, curr: any) => {
+            const key = curr.stepno;
+            if (!acc[key]) {
+                acc[key] = { stepno: key, actions: [] };
+            }
+            acc[key].actions.push(curr);
+            return acc;
+        }, {});
+
+        this.groupedStepsData = (Object.values(groups) as StepGroup[]).sort((a, b) => a.stepno - b.stepno);
     }
 
     pageBack() {
@@ -214,25 +227,6 @@ export class DocumentFlowComponent implements OnInit {
         }
 
         return 'pi pi-lock text-400';
-    }
-
-    get groupedSteps(): StepGroup[] {
-        if (!this.flowDoc?.steps) return [];
-
-        const groups = this.flowDoc.steps.reduce((acc: Record<number, StepGroup>, curr: StepGroup) => {
-            const key = curr.stepno;
-            if (!acc[key]) {
-                acc[key] = {
-                    stepno: key,
-                    actions: []
-                };
-            }
-            acc[key].actions.push(curr);
-            return acc;
-        }, {});
-
-        // ระบุ Type ตรงนี้เพื่อให้ TypeScript รู้ว่า group คือ StepGroup
-        return (Object.values(groups) as StepGroup[]).sort((a, b) => a.stepno - b.stepno);
     }
 
     showToast(severity: string, detail: string) {
