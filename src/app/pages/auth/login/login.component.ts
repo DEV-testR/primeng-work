@@ -17,6 +17,7 @@ import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
 import {LoginRequest} from '../../../models/loginRequest.model';
 import {appProperties} from "../../../../app.properties";
+import {environment} from "../../../../environments/environment";
 
 @Component({
     selector: 'app-login',
@@ -98,4 +99,5 @@ export class LoginComponent implements OnInit {
         await this.router.navigate(['/auth/register']);
     }
 
+    protected readonly environment = environment;
 }

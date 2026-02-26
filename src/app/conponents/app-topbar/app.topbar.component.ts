@@ -10,6 +10,7 @@ import {OverlayBadgeModule} from "primeng/overlaybadge";
 import {AppConfigurator} from "../../layout/component/app.configurator";
 import {appProperties} from "../../../app.properties";
 import {NotificationBellComponent} from "../app-notification-bell/app.notification.bell.component";
+import {environment} from "../../../environments/environment";
 
 @Component({
     selector: 'app-topbar',
@@ -34,4 +35,5 @@ export class AppTopbar {
         this.layoutService.layoutConfig.update((state) => ({...state, darkTheme: !state.darkTheme}));
     }
 
+    protected readonly environment = environment;
 }

@@ -7,12 +7,13 @@ import {LoginRequest} from "../models/loginRequest.model";
 import {RegisterRequest} from "../models/registerRequest.model";
 import {User} from "../models/user.model";
 import {appProperties} from "../../app.properties";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/auth`;
+    private readonly API_URL = `${environment.BASE_API_URL}/api/auth`;
     private readonly TOKEN_KEY = 'access_token';
     constructor(private http: HttpClient) {
     }

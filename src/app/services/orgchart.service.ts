@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {OrgChartNode} from "../models/orgchartNode.model";
 import {appProperties} from "../../app.properties";
+import {environment} from "../../environments/environment";
 
 // org-chart.service.ts
 @Injectable({ providedIn: 'root' })
 export class OrgChartService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/v1/org-chart`;
+    private readonly API_URL = `${environment.BASE_API_URL}/api/v1/org-chart`;
     constructor(private http: HttpClient) {}
 
     // ดึงเฉพาะ Root Nodes (CEO หรือหัวหน้าสูงสุด)

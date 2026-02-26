@@ -3,7 +3,7 @@ export interface GlobalConfig {
     production: boolean;
     appName: string;
     appTitle: string;
-    BASE_API_URL: string;
+    // BASE_API_URL: string;
     defaultPageSize: number;
     dateFormat: string;
     dateTimeFormat: string;
@@ -11,7 +11,7 @@ export interface GlobalConfig {
 }
 
 export const appProperties: GlobalConfig = {
-    BASE_API_URL: 'http://localhost:48080',
+    // BASE_API_URL: 'http://localhost:48080',
     inputDateFormat:'dd/mm/yy',
     dateFormat:'dd/MM/yyyy',
     dateTimeFormat:'dd/MM/yyyy HH:mm',

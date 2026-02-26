@@ -3,12 +3,13 @@ import {HttpClient, HttpEvent, HttpHeaders, HttpRequest} from '@angular/common/h
 import {Observable} from 'rxjs';
 import {appProperties} from "../../app.properties";
 import {LookupResponse} from "../models/lookupResponse.model";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root',
 })
 export class FilesUploadService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/v1/files`;
+    private readonly API_URL = `${environment.BASE_API_URL}/api/v1/files`;
     constructor(private http: HttpClient) {
     }
 

@@ -4,12 +4,13 @@ import {Observable} from 'rxjs';
 import {appProperties} from "../../app.properties";
 import {AuthService} from "./auth.service";
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root',
 })
 export class NotificationService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/v1/notifications`;
+    private readonly API_URL = `${environment.BASE_API_URL}/api/v1/notifications`;
     constructor(
         private http: HttpClient,
         private zone: NgZone,

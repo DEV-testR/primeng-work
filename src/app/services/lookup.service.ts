@@ -3,12 +3,13 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {appProperties} from "../../app.properties";
 import {LookupResponse} from "../models/lookupResponse.model";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root',
 })
 export class LookupService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/v1/lookup`;
+    private readonly API_URL = `${environment.BASE_API_URL}/api/v1/lookup`;
     constructor(private http: HttpClient) {
     }
 

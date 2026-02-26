@@ -3,12 +3,13 @@ import {HttpClient, HttpEvent, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {appProperties} from "../../app.properties";
 import {DocumentCriteria, DocumentData} from "../models/document.model";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root',
 })
 export class DocumentService {
-    private readonly API_URL = `${appProperties.BASE_API_URL}/api/v1/document`;
+    private readonly API_URL = `${environment.BASE_API_URL}/api/v1/document`;
     constructor(private http: HttpClient) {
     }
 

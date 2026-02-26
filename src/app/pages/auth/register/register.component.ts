@@ -14,6 +14,7 @@ import {ToastMessagesComponent} from '../../../conponents/toast-messages/toast-m
 import {AuthService} from '../../../services/auth.service';
 import {RegisterRequest} from "../../../models/registerRequest.model";
 import {appProperties} from "../../../../app.properties";
+import {environment} from "../../../../environments/environment";
 
 @Component({
     selector: 'app-login',
@@ -86,4 +87,5 @@ export class RegisterComponent {
         await this.router.navigate(['/login']);
     }
 
+    protected readonly environment = environment;
 }
