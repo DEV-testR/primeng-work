@@ -64,27 +64,38 @@ export class DocumentFlowComponent implements OnInit {
         private readonly messageService: MessageService,
     ) {}
 
+    fetchDocumentData(id:string) {
+        this.loading = true;
+        this.documentService.searchById(id).subscribe({
+            next: (res) => {
+                this.loading = false;
+                this.documentForm = res;
+                this.ngProcessDocumentData();
+            },
+            error: (err) => {
+                this.loading = false;
+                this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
+            }
+        });
+    }
     ngOnInit() {
-        const id = history.state.id;
-        if (history.state.documentForm) {
-            this.documentForm = history.state.documentForm;
-            this.ngProcessDocumentData();
-        } else if (id) {
-            this.loading = true;
-            this.documentService.searchById(id).subscribe({
-                next: (res) => {
-                    this.loading = false;
-                    this.documentForm = res;
+        this.route.paramMap.subscribe(params => {
+            const id = params.get('id');
+            if (id) {
+                this.fetchDocumentData(id);
+            } else {
+                const stateId = history.state.id;
+                const stateForm = history.state.documentForm;
+                if (stateForm) {
+                    this.documentForm = stateForm;
                     this.ngProcessDocumentData();
-                },
-                error: (err) => {
-                    this.loading = false;
-                    this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
+                }else if (stateId) {
+                    this.fetchDocumentData(stateId);
+                } else {
+                    void this.router.navigate(['/document'], { relativeTo: this.route })
                 }
-            });
-        } else {
-            this.router.navigate(['/document'], { relativeTo: this.route }).then();
-        }
+            }
+        });
     }
 
     ngProcessDocumentData() {
