@@ -25,7 +25,7 @@ export class NotificationService {
                 const token = this.authService.getAccessToken();
 
                 eventSource = new EventSourcePolyfill(
-                    `${this.API_URL}/stream/${userId}?token=${token}`,
+                    `${this.API_URL}/stream/${userId}`,
                     {
                         headers: { 'Authorization': `Bearer ${token}` },
                         heartbeatTimeout: 300000 // 5 นาที
