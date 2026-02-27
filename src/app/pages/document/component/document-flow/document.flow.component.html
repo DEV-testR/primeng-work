@@ -1,9 +1,9 @@
 <toast-messages/>
 <div class="flex flex-col">
-    <div class="flex flex-grow flex-col justify-between gap-8 min-h-[calc(100vh-8rem)]">
+    <div class="flex flex-grow flex-col justify-between gap-8 min-h-[calc(100dvh-8rem)]">
         <div class="flex flex-col gap-5">
             <div class="bg-[var(--surface-card)] rounded-[var(--content-border-radius)] shadow-md p-0">
-                <p-panel header="Flow Steps" class="border-none" [toggleable]="true" [collapsed]="false">
+                <p-panel header="Flow Steps" class="border-none" [toggleable]="true" [collapsed]="isMobileCollapsed">
                     <p-stepper [value]="flowDoc?.activeStep">
                         <p-step-list style="align-items: flex-start">
                             <p-step *ngFor="let group of groupedStepsData; let i = index"

@@ -14,6 +14,7 @@ import {ToastMessagesComponent} from "../../../../conponents/toast-messages/toas
 import {YesNoPipe} from "../../../../pipes/yes-no.pipe";
 import {DocumentService} from "../../../../services/document.service";
 import {StepGroup} from "../../../../models/document.model";
+import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 
 @Component({
     selector: 'app-document-flow',
@@ -43,6 +44,7 @@ import {StepGroup} from "../../../../models/document.model";
 })
 export class DocumentFlowComponent implements OnInit {
     protected readonly appProperties = appProperties;
+    isMobileCollapsed: boolean = false;
     loading: boolean = false;
     isAllowEdit:boolean = false;
     isActiveStep: boolean = false;
@@ -61,6 +63,7 @@ export class DocumentFlowComponent implements OnInit {
         private filesUploadService: FilesUploadService,
         private documentService: DocumentService,
         private fileSaver: FileSaverService,
+        private breakpointObserver: BreakpointObserver,
         private readonly messageService: MessageService,
     ) {}
 
@@ -79,6 +82,11 @@ export class DocumentFlowComponent implements OnInit {
         });
     }
     ngOnInit() {
+        this.breakpointObserver.observe([Breakpoints.Handset])
+            .subscribe(result => {
+                this.isMobileCollapsed = result.matches;
+            });
+
         this.route.paramMap.subscribe(params => {
             const id = params.get('id');
             if (id) {
