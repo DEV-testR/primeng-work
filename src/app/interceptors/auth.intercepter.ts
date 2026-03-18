@@ -13,6 +13,11 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
     const authService = inject(AuthService);
     const router = inject(Router);
 
+    if (req.headers.has('Skip-Auth') || req.url.includes('/api/auth/logout')) {
+        const newHeaders = req.headers.delete('Skip-Auth');
+        return next(req.clone({ headers: newHeaders }));
+    }
+
     const accessToken = authService.getAccessToken();
     const isRefreshRequest = req.url.endsWith('/auth/refresh');
 

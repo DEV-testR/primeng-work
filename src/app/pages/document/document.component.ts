@@ -49,7 +49,7 @@ export class DocumentComponent implements OnInit {
     isValidateFailed: boolean = false;
     displayConfirmation: boolean = false;
     messageConfirm: string = '';
-    selectedDocToDel :DocumentData | undefined;
+    itemDelete :DocumentData | undefined;
     documentList: DocumentData[] = [];
     protected readonly appProperties = appProperties;
 
@@ -121,7 +121,7 @@ export class DocumentComponent implements OnInit {
 
     ngDelete(doc : DocumentData) {
         this.displayConfirmation = true
-        this.selectedDocToDel = doc;
+        this.itemDelete = doc;
         this.messageConfirm = `Are you sure you want to proceed '${doc.documentNo}' ?`;
     }
 
@@ -150,7 +150,7 @@ export class DocumentComponent implements OnInit {
         this.displayConfirmation = false;
 
         // 1. Check null/undefined ให้ชัวร์
-        if (!this.selectedDocToDel || !this.selectedDocToDel.id) {
+        if (!this.itemDelete || !this.itemDelete.id) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
@@ -159,7 +159,7 @@ export class DocumentComponent implements OnInit {
             return;
         }
 
-        const id = this.selectedDocToDel.id;
+        const id = this.itemDelete.id;
         this.loading = true;
 
         this.documentService.delete(id).subscribe({
@@ -173,7 +173,7 @@ export class DocumentComponent implements OnInit {
                     detail: 'Document deleted successfully'
                 });
 
-                this.selectedDocToDel = undefined;
+                this.itemDelete = undefined;
             },
             error: (err) => {
                 this.loading = false;

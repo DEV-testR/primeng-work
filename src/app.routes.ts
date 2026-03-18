@@ -25,6 +25,10 @@ export const appRoutes: Routes = [
                 loadChildren: () => import('./app/pages/document/document.routes'),
                 data: { breadcrumb: 'Documents' }
             },
+            {path: 'recordtype',
+                loadChildren: () => import('./app/pages/recordtype/recordtype.routes'),
+                data: { breadcrumb: 'RecordType' }
+            },
             {path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes')},
             {path: 'documentation', component: Documentation},
             {path: 'pages', loadChildren: () => import('./app/pages/pages.routes')},

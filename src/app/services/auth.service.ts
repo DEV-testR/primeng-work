@@ -57,8 +57,16 @@ export class AuthService {
     }
 
     logout(): Observable<void> {
-        return this.http.post<void>(`${this.API_URL}/logout`, {}, {withCredentials: true})
-            .pipe(tap(() => this.removeAccessToken()));
+        return this.http.post<void>(
+            `${this.API_URL}/logout`,
+            {},
+            {
+                withCredentials: true,
+                headers: { 'Skip-Auth': 'true' } // ส่ง flag ไปที่ Interceptor
+            }
+        ).pipe(
+            tap(() => this.removeAccessToken())
+        );
     }
 
 }
