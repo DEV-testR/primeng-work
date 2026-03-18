@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {appProperties} from "../../app.properties";
 import {DocumentCriteria, DocumentData} from "../models/document.model";
 import {environment} from "../../environments/environment";
+import {map} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root',
@@ -13,8 +14,8 @@ export class RecordTypeService {
     constructor(private http: HttpClient) {
     }
 
-    search(payload : DocumentCriteria): Observable<any> {
-        return this.http.post<any>(`${this.API_URL}/search`, payload);
+    search(recordtypeName : String): Observable<any> {
+        return this.http.get<any>(`${this.API_URL}/search/${recordtypeName}`);
     }
 
     searchById(id : String): Observable<any> {

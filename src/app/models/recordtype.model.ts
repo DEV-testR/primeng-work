@@ -1,12 +1,27 @@
+/** 1. ต้องเป็น Class เพื่อให้ลูกหลานสืบทอด properties ได้จริง */
+export class GenericPersistentObject {
+    createdBy?: string;
+    createdDate?: Date | string | number;
+    updatedBy?: string;
+    updatedDate?: Date | string | number;
+}
 
-export interface RecordType extends GenericPersistentObject {
-    id: string;
+export class RecordType extends GenericPersistentObject {
+    id!: string;
+    name!: string;
+    label!: string;
+    inactive: boolean = false;
+    custom: boolean = false;
+    schemaField: boolean = false;
+    loadOnInit: boolean = false;
+    recordtypeFields: RecordTypeField[] = [];
+
     className?: string;
     customActions?: string;
     customFrom?: string;
     customGroup?: string;
     customOrder?: string;
-    customQueryType?: QueryType; // Enum หรือ Type ที่นิยามไว้
+    customQueryType?: string;
     customSelect?: string;
     customWhere?: string;
     description?: string;
@@ -18,16 +33,10 @@ export interface RecordType extends GenericPersistentObject {
     hbmFile?: string;
     helpText?: string;
     hint?: string;
-    inactive: boolean;
-    custom: boolean;
-    schemaField: boolean;
     tableName?: string;
     indexField?: string;
-    label: string;
     licType?: string;
-    loadOnInit: boolean;
     menuOrder?: number;
-    name: string;
     namespace?: string;
     onAfterQuery?: string;
     onBeforeDelete?: string;
@@ -39,7 +48,7 @@ export interface RecordType extends GenericPersistentObject {
     overrideByRecordType?: string;
     patFilter?: string;
     patId?: string;
-    prop?: string;
+    prop?: any;
     refRecordType?: string;
     remarks?: string;
     reportFilename?: string;
@@ -49,87 +58,81 @@ export interface RecordType extends GenericPersistentObject {
     tab?: string;
     unity?: string;
     valstr?: string;
-    recordtypeFields: RecordTypeField[];
+
+    constructor(data?: Partial<RecordType>) {
+        super();
+        if (data) {
+            Object.assign(this, data);
+            if (data.recordtypeFields) {
+                this.recordtypeFields = data.recordtypeFields.map(f => new RecordTypeField(f));
+            }
+        }
+    }
+
+    /** * Getter function สำหรับดึง Filter Fields
+     * ใช้ filterFields แทน getFilterFields() เพื่อความสะดวกใน Template
+     */
+    get filterFields(): RecordTypeField[] {
+        return (this.recordtypeFields || [])
+            .filter(field => (field.filterField && field.filterKey))
+            .sort((a, b) => (a.fieldSeq || 0) - (b.fieldSeq || 0));
+    }
 }
 
-export interface GenericPersistentObject {
-    createdBy?: string;
-    createdDate?: Date | string | number;
-    updatedBy?: string;
-    updatedDate?: Date | string | number;
-}
-
-export interface RecordTypeField extends GenericPersistentObject {
-    id: string; // ใช้ string เพื่อรองรับ Long จาก Java (กันเลขเพี้ยน)
-
-    col?: string;
+export class RecordTypeField extends GenericPersistentObject {
+    id!: string;
+    name?: string;
+    label?: string;
     dataType?: string;
+    advFilterEn?: boolean;
+    isSearchRequired?: boolean;
+    displaySeq?: number;
+
+    // Fields อื่นๆ ที่คุณมีใน Entity
     defaultPattern?: string;
     defaultValue?: string;
     description?: string;
-
     displayCol?: number;
     displayRow?: number;
     displaySection?: string;
-    displaySeq?: number;
-
     fieldSeq?: number;
     fieldType?: number;
-
-    advFilterEn?: boolean;
     filterField?: string;
     filterKey?: string;
     filterOp?: string;
     filterVal?: string;
-
     groupLevel?: number;
     helpText?: string;
     columnName?: string;
     hint?: string;
-
     isIndex?: boolean;
     indexValue?: string;
     isRequired?: boolean;
     schema?: string;
     isUnique?: boolean;
-    isSearchRequired?: boolean;
-
     isVisible?: number;
-    label?: string;
-    name?: string;
-    namespace?: string;
-
     numPrecision?: number;
     numScale?: number;
-
     onBlur?: string;
     onChange?: string;
-
     optionLabels?: string;
     optionValues?: string;
-
-    prop?: CustomProperty;
-    optionMapLabel?: OptionMapLabel;
-
+    optionMapLabel?: any;
     refRecordTypeFields?: string;
     relateRecordBack?: string;
     relateRecordTypeId?: string;
     relateRecordTypeName?: string;
-
     scriptStat?: string;
     scriptTable?: string;
     txtLength?: number;
     unity?: string;
     visibleLines?: number;
     visibleWidth?: number;
-}
 
-export interface CustomProperty {
-    [key: string]: any;
+    constructor(data?: Partial<RecordTypeField>) {
+        super();
+        if (data) {
+            Object.assign(this, data);
+        }
+    }
 }
-
-export interface OptionMapLabel {
-    [value: string]: string;
-}
-
-export type QueryType = 'SQL' | 'HQL' | 'NATIVE' | string;

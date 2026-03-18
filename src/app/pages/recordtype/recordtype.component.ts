@@ -26,6 +26,7 @@ export class RecordTypeComponent implements OnInit {
     isValidateFailed: boolean = false;
     displayConfirmation: boolean = false;
     messageConfirm: string = '';
+    item :RecordType | undefined;
     itemDelete :RecordType | undefined;
     itemList: RecordType[] = [];
     protected readonly appProperties = appProperties;
@@ -41,8 +42,26 @@ export class RecordTypeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log('ngOnInit');
-        this.initForm();
+        const recordTypeName = this.route.snapshot.paramMap.get('name') || 'AC_RecordType';
+        console.log(`ngOnInit recordtype name : ${recordTypeName}`);
+
+        // Fetch Data OF RecordType
+        this.loading = true;
+        this.recordtypeService.search(recordTypeName).subscribe({
+            next: (res) => {
+                this.loading = false;
+                this.item = new RecordType(res);
+                console.log('search result : ', this.item);
+
+                const filterFields = this.item.filterFields || [];
+                console.log('filterFields : ', filterFields);
+            },
+            error: (err) => {
+                this.loading = false;
+                console.error('search data failed', err);
+                this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
+            }
+        });
     }
 
     initForm() {

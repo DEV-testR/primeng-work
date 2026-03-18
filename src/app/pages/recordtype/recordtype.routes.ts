@@ -13,15 +13,5 @@ export default [
         component: RecordTypeComponent,
         data: { breadcrumb: 'RecordType' }
     },
-    /*{
-        path: 'form',
-        component: DocumentFormComponent,
-        data: { breadcrumb: 'Form' }
-    },
-    {
-        path: 'form/:id',
-        component: DocumentFormComponent,
-        data: { breadcrumb: 'Form' }
-    },*/
     { path: '**', redirectTo: '/notfound' }
 ] as Routes;
