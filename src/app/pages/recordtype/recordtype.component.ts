@@ -46,7 +46,7 @@ export class RecordTypeComponent implements OnInit {
         this.searchForm = fb.group({});
     }
 
-    async ngOnInit(): Promise<void> { // 2. ใส่ async และเปลี่ยน return type เป็น Promise
+    async ngOnInit(): Promise<void> {
         const recordTypeName = this.route.snapshot.paramMap.get('name') || 'AC_RecordType';
         console.log(`ngOnInit recordtype name : ${recordTypeName}`);
 
