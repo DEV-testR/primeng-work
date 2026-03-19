@@ -1,11 +1,18 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormBuilder,
+    UntypedFormControl,
+    UntypedFormGroup
+} from "@angular/forms";
 import {MessageService} from "primeng/api";
 import {TableModule} from "primeng/table";
 import {ActivatedRoute, Router} from "@angular/router";
 import {appProperties} from "../../../app.properties";
 import {RecordTypeService} from "../../services/recordtype.service";
-import {RecordType} from "../../models/recordtype.model";
+import {RecordType, RecordTypeField} from "../../models/recordtype.model";
+import {firstValueFrom} from "rxjs";
 
 @Component({
     selector: 'app-recordtype',
@@ -39,36 +46,34 @@ export class RecordTypeComponent implements OnInit {
         this.searchForm = fb.group({});
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> { // 2. ใส่ async และเปลี่ยน return type เป็น Promise
         const recordTypeName = this.route.snapshot.paramMap.get('name') || 'AC_RecordType';
         console.log(`ngOnInit recordtype name : ${recordTypeName}`);
 
-        // Fetch Data OF RecordType
         this.loading = true;
-        this.recordtypeService.search(recordTypeName).subscribe({
-            next: (res) => {
-                this.loading = false;
-                this.item = new RecordType(res);
-                console.log('search result : ', this.item);
 
-                const filterFields = this.item.filterFields || [];
-                console.log('filterFields : ', filterFields);
-            },
-            error: (err) => {
-                this.loading = false;
-                console.error('search data failed', err);
-                this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
-            }
-        });
-    }
+        try {
+            const res = await firstValueFrom(this.recordtypeService.search(recordTypeName));
+            console.log('recordtypeService.search result : ', res);
+            this.item = new RecordType(res);
 
-    initForm() {
-        const today : Date = new Date();
-        /*this.searchForm.addControl("documentType", new UntypedFormControl('TIME', { nonNullable: true }));
-        this.searchForm.addControl("documentStatus", new UntypedFormControl('-1', { nonNullable: true }));
-        this.searchForm.addControl("emId", new UntypedFormControl(null));
-        this.searchForm.addControl("month", new UntypedFormControl(today.getMonth()));
-        this.searchForm.addControl("year", new UntypedFormControl(today.getFullYear()));*/
+            const filterFields: RecordTypeField[] = this.item.filterFields || [];
+            filterFields
+                .filter((field): field is RecordTypeField & { name: string } => !!field.name)
+                .forEach(field => {
+                    this.searchForm.addControl(field.name, new UntypedFormControl(null));
+                });
+
+        } catch (err: any) {
+            console.error('search data failed', err);
+            this.messageService.add({
+                severity: 'error',
+                summary: `Error ${err.status}`,
+                detail: err.statusText
+            });
+        } finally {
+            this.loading = false;
+        }
     }
 
 }
