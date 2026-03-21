@@ -2,8 +2,8 @@ import {Component, forwardRef, Input, OnInit, ViewChild} from "@angular/core";
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {AutoComplete} from "primeng/autocomplete";
 import {LookupService} from "../../services/lookup.service";
-import {LookupResponse} from "../../models/lookupResponse.model";
 import {LookupItem} from "../../models/lookup.model";
+import {firstValueFrom} from "rxjs";
 
 interface autoCompleteItem {
     label: string;
@@ -30,7 +30,7 @@ interface autoCompleteItem {
                             [virtualScrollItemSize]="34"
                             (completeMethod)="filterItems($event)"
                             (onSelect)="onItemSelect($event)"
-                            (onFocus)="showAllItems($event)"
+                            (onFocus)="showAllItems()"
                             (onClear)="onClear()"
                             (onBlur)="onTouched()"
                             [minLength]="0"
@@ -40,7 +40,7 @@ interface autoCompleteItem {
                             [style]="{'width': '100%'}"
                             [inputStyle]="{'width': '100%'}"
                             [inputStyleClass]="isValidateFailed ? 'ng-invalid ng-dirty' : ''"
-                            placeholder="Search">
+                            [placeholder]="isLoading ? 'Loading...' : 'Search'">
             </p-autocomplete>
         </div>`,
 
@@ -59,6 +59,7 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     filteredItems: autoCompleteItem[] = [];
     selectedItem: autoCompleteItem | undefined;
     disabled: boolean = false;
+    isLoading: boolean = false;
     private pendingValue: any;
     private isSelecting = false;
 
@@ -68,18 +69,27 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     constructor(private lookupService: LookupService) {}
 
     ngOnInit(): void {
-        if (this.clazzName) {
-            this.loadLookupData();
-        }
+        console.log('LookupAutocompleteComponent ngOnInit', this.clazzName);
     }
 
     setDisabledState(isDisabled: boolean): void {
         this.disabled = isDisabled;
     }
 
-    private loadLookupData(): void {
-        this.lookupService.fetchDataLookup(this.clazzName).subscribe({
-            next: (res: LookupResponse[]) => {
+    private async loadLookupData(): Promise<void> {
+        if (!this.clazzName || this.isLoading) return;
+        const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+        try {
+            this.isLoading = true;
+            console.log('loadLookupData: Fetching lookup data for', this.clazzName);
+            const resPromise = firstValueFrom(this.lookupService.fetchDataLookup(this.clazzName));
+            const [res] = await Promise.all([
+                resPromise,
+                delay(700)
+            ]);
+
+            if (res) {
                 this.sourceItems = res.map(item => ({
                     id: item.id,
                     code: item.code,
@@ -89,9 +99,12 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
                 if (this.pendingValue) {
                     this.writeValue(this.pendingValue);
                 }
-            },
-            error: (err) => console.error('Error:', err)
-        });
+            }
+        } catch (err) {
+            console.error('loadLookupData: Error loading lookup data:', err);
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     writeValue(val: any): void {
@@ -122,6 +135,7 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     }
 
     onItemSelect(event: any) {
+        console.log('onItemSelect', event);
         this.isSelecting = true;
         const selected = event.value;
         const value : string = selected.value;
@@ -140,31 +154,40 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
         this.onChange(null);
     }
 
-    showAllItems(event: any) {
-        if (this.isSelecting || this.disabled) {
+    async showAllItems() {
+        if (this.disabled || this.isLoading) {
             return;
+        }
+
+        if (this.sourceItems.length === 0) {
+            await this.loadLookupData();
         }
 
         if (this.isSelecting) {
-            this.isSelecting = false; // reset flag
+            this.isSelecting = false;
             return;
         }
 
-        console.log('showAllItems', event);
-        this.filteredItems = [...this.sourceItems].map(item => ({
+        this.filteredItems = this.sourceItems.map(item => ({
             label: `${item.code} : ${item.name}`,
             value: item.id
         }));
 
         setTimeout(() => {
-            if (this.autoComplete && !this.selectedItem) { // เพิ่มเช็กถ้ามีค่าอยู่แล้วอาจจะไม่ต้องโชว์
+            if (this.autoComplete && !this.selectedItem && !this.isLoading) {
+                console.log('autoComplete show')
                 this.autoComplete.show();
             }
         }, 150);
     }
 
-    filterItems(event: any) {
-        console.log('filterItems....');
+    async filterItems(event: any) {
+        console.log('filterItems triggered', event.query);
+        if (this.sourceItems.length === 0) {
+            this.autoComplete.hide();
+            await this.loadLookupData();
+        }
+
         const query = (event.query || '').toLowerCase();
         if (!query) {
             this.filteredItems = [...this.sourceItems].map(item => ({
