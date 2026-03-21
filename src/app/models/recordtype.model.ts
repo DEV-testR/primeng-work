@@ -69,13 +69,16 @@ export class RecordType extends GenericPersistentObject {
         }
     }
 
-    /** * Getter function สำหรับดึง Filter Fields
-     * ใช้ filterFields แทน getFilterFields() เพื่อความสะดวกใน Template
-     */
     get filterFields(): RecordTypeField[] {
         return (this.recordtypeFields || [])
-            .filter(field => (field.filterField && field.filterKey))
+            .filter(field => (field.filterKey))
             .sort((a, b) => (a.fieldSeq || 0) - (b.fieldSeq || 0));
+    }
+
+    get displayFields(): RecordTypeField[] {
+        return (this.recordtypeFields || [])
+            .filter(field => (field.displaySeq))
+            .sort((a, b) => (a.displaySeq || 0) - (b.displaySeq || 0));
     }
 }
 
@@ -134,5 +137,13 @@ export class RecordTypeField extends GenericPersistentObject {
         if (data) {
             Object.assign(this, data);
         }
+    }
+
+    get optionsSelect() {
+        if (!this.optionMapLabel) return [];
+        return Object.entries(this.optionMapLabel).map(([key, value]) => ({
+            label: value,
+            value: key
+        }));
     }
 }

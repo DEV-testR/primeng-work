@@ -12,7 +12,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
     const authService = inject(AuthService);
     const router = inject(Router);
-    console.log('AuthInterceptor:', req.url);
+    // console.log('AuthInterceptor:', req.url);
     if (req.headers.has('Skip-Auth') || req.url.includes('/api/auth/logout')) {
         const newHeaders = req.headers.delete('Skip-Auth');
         return next(req.clone({ headers: newHeaders }));
