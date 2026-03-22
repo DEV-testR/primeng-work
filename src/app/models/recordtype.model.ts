@@ -1,4 +1,18 @@
-/** 1. ต้องเป็น Class เพื่อให้ลูกหลานสืบทอด properties ได้จริง */
+export class FormSection {
+    label!: string;
+    fields!: RecordTypeField[];
+}
+
+export class  RowData {
+    rowNumber!: string;
+    cols!: RecordTypeField[];
+}
+
+export class  SectionData {
+    label!: string;
+    rows!: RowData[];
+}
+
 export class GenericPersistentObject {
     createdBy?: string;
     createdDate?: Date | string | number;
@@ -80,6 +94,81 @@ export class RecordType extends GenericPersistentObject {
             .filter(field => (field.displaySeq))
             .sort((a, b) => (a.displaySeq || 0) - (b.displaySeq || 0));
     }
+
+    get listFormDisplay(): RecordTypeField[] {
+        const getSectionOrder = (sectionStr: string | null | undefined): number => {
+            if (!sectionStr) return 0;
+            const order = parseInt(sectionStr.split(';')[0], 10);
+            return isNaN(order) ? 0 : order;
+        };
+
+        return (this.recordtypeFields || [])
+            .filter(field => field.displayCol && field.displayRow)
+            .sort((a, b) => {
+                // 1. เรียงตามเลขหน้าของ Section (เช่น '1', '2')
+                const orderA = getSectionOrder(a.displaySection);
+                const orderB = getSectionOrder(b.displaySection);
+
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+
+                if ((a.displayRow || 0) !== (b.displayRow || 0)) {
+                    return (a.displayRow || 0) - (b.displayRow || 0);
+                }
+
+                return (a.displayCol || 0) - (b.displayCol || 0);
+            });
+    }
+
+    groupedFields(sorted: RecordTypeField[]): FormSection[] {
+        const sections: { [key: string]: RecordTypeField[] } = {};
+
+        // 2. จัดกลุ่มตาม Section Name
+        sorted.forEach(field => {
+            const sectionLabel = field.displaySection?.split(';')[1] || '';
+            if (!sections[sectionLabel]) {
+                sections[sectionLabel] = [];
+            }
+            sections[sectionLabel].push(field);
+        });
+
+        return Object.keys(sections).map(label => ({
+            label,
+            fields: sections[label]
+        }));
+    }
+
+    groupedSectionFields(sorted: RecordTypeField[]): SectionData[] {
+        const sections: Record<string, Record<number, RecordTypeField[]>> = {};
+        sorted.forEach(field => {
+            const sectionLabel = field.displaySection?.split(';')[1] || 'General Information';
+            const rowNum = field.displayRow || 0;
+
+            if (!sections[sectionLabel]) sections[sectionLabel] = {};
+            if (!sections[sectionLabel][rowNum]) sections[sectionLabel][rowNum] = [];
+
+            sections[sectionLabel][rowNum].push(field);
+        });
+
+        return Object.keys(sections).map(sLabel => ({
+            label: sLabel,
+            rows: Object.keys(sections[sLabel]).map(rNum => ({
+                rowNumber: rNum,
+                // sort row column
+                cols: sections[sLabel][+rNum].sort((a, b) => (a.displayCol || 0) - (b.displayCol || 0))
+            })).sort((a, b) => (+a.rowNumber) - (+b.rowNumber))
+        }));
+    }
+
+    groupedRowCntFields(sorted: RecordTypeField[]): Record<number, number> {
+        const counts: Record<number, number> = {};
+        sorted.forEach(f => {
+            const row = f.displayRow || 0;
+            counts[row] = (counts[row] || 0) + 1;
+        });
+        return counts;
+    }
 }
 
 export class RecordTypeField extends GenericPersistentObject {
@@ -147,3 +236,4 @@ export class RecordTypeField extends GenericPersistentObject {
         }));
     }
 }
+

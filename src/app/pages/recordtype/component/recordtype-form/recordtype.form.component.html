@@ -1,0 +1,153 @@
+<toast-messages/>
+<div class="flex flex-col">
+    <div class="flex flex-grow flex-col justify-between gap-3 min-h-[calc(100dvh-8rem)]">
+        <div class="flex flex-col gap-5">
+            <p-fluid [formGroup]="formGroup">
+                <div class="card flex flex-col gap-6 p-6 max-h-[calc(94dvh-8rem)] overflow-y-auto">
+                    <!--<p-breadcrumb [model]="items" [home]="home" />-->
+                    <h2 class="text-xl font-bold mb-4">{{recordTypeItem?.label || recordTypeItem?.name}}</h2>
+                        @for (section of groupedSectionFields1; track section.label) {
+                            <div class="flex flex-col gap-5 p-4">
+                                <div class="font-semibold text-xl border-b pb-2">{{ section.label }}</div>
+                                @for (row of section.rows; track row.rowNumber) {
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+
+                                        @for (field of row.cols; track field.id) {
+                                            @let colPos = field.displayCol || 0;
+                                            @let isOnlyOneInRow = row.cols.length === 1;
+                                            @let clazzCss = (isOnlyOneInRow ? 'col-span-1 md:col-span-2' : 'col-span-1')
+                                                + (colPos === 2 && !isOnlyOneInRow ? ' md:col-start-2' : ' md:col-start-1');
+                                            @let dataType = field.dataType || '';
+
+                                            <div class="{{clazzCss}}">
+                                            <div class="grid grid-cols-12 {{isOnlyOneInRow ? 'gap-2' : 'gap-5'}} items-start min-h-[40px]">
+                                                    <label [for]="field.name"
+                                                           [class]="isOnlyOneInRow ? 'col-span-12 md:col-span-2' : 'col-span-12 md:col-span-4'">
+                                                        {{ field.label || field.name }}
+                                                        <span *ngIf="field.isRequired">*</span>
+                                                    </label>
+
+                                                    <div [class]="isOnlyOneInRow ? 'col-span-12 md:col-span-10' : 'col-span-12 md:col-span-8'">
+                                                        @switch (dataType) {
+                                                            @case ('CHECKBOX') {
+                                                                <p-checkbox [formControlName]="field.name!"
+                                                                            [binary]="true"></p-checkbox>
+                                                            }
+                                                            @case ('MULTISELECT') {
+                                                                <p-multiSelect [formControlName]="field.name!"
+                                                                               [options]="field.optionsSelect"
+                                                                               placeholder="Select..."></p-multiSelect>
+                                                            }
+                                                            @case ('DATE') {
+                                                                <p-datepicker
+                                                                        [formControlName]="field.name!"
+                                                                        [showTime]="false"
+                                                                        [showIcon]="true"
+                                                                        [iconDisplay]="'input'"
+                                                                        [dateFormat]="appProperties.inputDateFormat"
+                                                                        hourFormat="24"
+                                                                        [showButtonBar]="true"
+                                                                        appendTo="body">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('DATETIME') {
+                                                                <p-calendar [formControlName]="field.name!"
+                                                                            [showTime]="true"></p-calendar>
+                                                            }
+                                                            @case ('TIMESTAMP') {
+                                                                <p-calendar [formControlName]="field.name!"
+                                                                            [showTime]="true"></p-calendar>
+                                                            }
+                                                            @case ('TIME') {
+                                                                <p-calendar [formControlName]="field.name!"
+                                                                            [showTime]="true"
+                                                                            [timeOnly]="true"></p-calendar>
+                                                            }
+                                                            @case ('YEAR') {
+                                                                <p-calendar [formControlName]="field.name!" view="year"
+                                                                            dateFormat="yy"></p-calendar>
+                                                            }
+                                                            @case ('YEARMONTH') {
+                                                                <p-calendar [formControlName]="field.name!" view="month"
+                                                                            dateFormat="mm/yy"></p-calendar>
+                                                            }
+                                                            @case ('INTEGER') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="false"></p-inputNumber>
+                                                            }
+                                                            @case ('LONG') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="false"></p-inputNumber>
+                                                            }
+                                                            @case ('DECIMAL') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="true"></p-inputNumber>
+                                                            }
+                                                            @case ('COLNO') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="false"></p-inputNumber>
+                                                            }
+                                                            @case ('TEXTAREA') {
+                                                                <textarea pInputTextarea [formControlName]="field.name!" [name]="field.name!"
+                                                                          [rows]="5"
+                                                                          class="w-full"></textarea>
+                                                            }
+                                                            @case ('RICHTEXT') {
+                                                                <textarea pInputTextarea [formControlName]="field.name!" [name]="field.name!"
+                                                                          [rows]="5"
+                                                                          class="w-full"></textarea>
+                                                            }
+                                                            @case ('SECRET') {
+                                                                <p-password [formControlName]="field.name!"
+                                                                            [feedback]="false"
+                                                                            [toggleMask]="true"></p-password>
+                                                            }
+                                                            @default {
+                                                                @if ('RECORD' === (field.dataType) && field.relateRecordTypeName) {
+                                                                    <app-lookup-autocomplete
+                                                                            [isValidateFailed]="isValidateFailed"
+                                                                            [clazzName]="field.relateRecordTypeName"
+                                                                            [formControlName]="field.name!"/>
+                                                                }
+                                                                @else if ('RECORDLIST' === (field.dataType) && field.relateRecordTypeName) {
+                                                                    <p>Todo RECORDLIST</p>
+                                                                }
+                                                                @else if (['SELECT', 'SELECTINT'].includes(field.dataType!)) {
+                                                                    <p-dropdown
+                                                                            [formControlName]="field.name!"
+                                                                            [options]="field.optionsSelect"
+                                                                            optionLabel="label"
+                                                                            optionValue="value"
+                                                                            placeholder="Select..."
+                                                                            [showClear]="true"
+                                                                            styleClass="w-full">
+                                                                    </p-dropdown>
+                                                                } @else {
+                                                                    <input class="form-control"
+                                                                           [formControlName]="field.name!"
+                                                                           pInputText
+                                                                           [type]="field.dataType === 'EMAIL' ? 'email' : 'text'"/>
+                                                                }
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                </div>
+            </p-fluid>
+        </div>
+        <div class="flex justify-between gap-2 bg-[var(--surface-card)] rounded-[var(--content-border-radius)] shadow-md p-2">
+            <div class="flex flex-row gap-2">
+                <p-button label="Save" (onClick)="ngSave()" [loading]="loading"></p-button>
+            </div>
+            <div>
+                <p-button label="Cancel" (onClick)="pageBack()" severity="danger" [loading]="loading" outlined></p-button>
+            </div>
+        </div>
+    </div>
+</div>

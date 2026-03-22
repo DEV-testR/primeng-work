@@ -29,8 +29,9 @@ export class RecordTypeService {
         return this.http.get<any>(`${this.API_URL}/data/search/${recordtypeName}`, httpOptions);
     }
 
-    searchById(id : String): Observable<any> {
-        return this.http.get<any>(`${this.API_URL}/search/${id}`);
+    getDataById(recordtypeName: string, id : String): Observable<any> {
+        const httpOptions = { headers: new HttpHeaders({'Content-Type': 'application/json'}) };
+        return this.http.get<any>(`${this.API_URL}/data/search/${recordtypeName}/${id}`, httpOptions);
     }
 
     delete(id : String): Observable<any> {

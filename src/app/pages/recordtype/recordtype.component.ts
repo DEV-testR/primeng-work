@@ -63,11 +63,12 @@ export class RecordTypeComponent implements OnInit {
     isValidateFailed: boolean = false;
     displayConfirmation: boolean = false;
     messageConfirm: string = '';
-    recordType! :RecordType;
+    recordType :RecordType | undefined;
     recordTypeFilterField: RecordTypeField[] = [];
     recordTypeDisplayField: RecordTypeField[] = [];
     itemDelete :RecordType | undefined;
-    itemList: RecordType[] = [];
+    resultItemList: RecordType[] = [];
+    cacheSearchForm! : Record<string,any>;
     protected readonly appProperties = appProperties;
 
     constructor(
@@ -83,17 +84,39 @@ export class RecordTypeComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         const recordTypeName = this.route.snapshot.paramMap.get('name') || 'AC_RecordType';
         console.log(`ngOnInit recordtype name : ${recordTypeName}`);
+
+        const state = history.state;
+        if (state) {
+            if (state.cacheRecordTypeForm?.[recordTypeName]) {
+                this.recordType = new RecordType(state.cacheRecordTypeForm[recordTypeName]);
+                console.log('Metadata loaded from Cache');
+            }
+
+            if (state.cacheRecordTypeResult?.[recordTypeName]) {
+                this.resultItemList = state.cacheRecordTypeResult[recordTypeName];
+                console.log('Result List loaded from Cache');
+            }
+
+            if (state.cacheRecordTypeSearchForm?.[recordTypeName]) {
+                this.cacheSearchForm = state.cacheRecordTypeSearchForm[recordTypeName];
+                console.log('Result List loaded from Cache');
+            }
+        }
+
+        if (!this.recordType) {
+            await this.fetchRecordTypeMetadata(recordTypeName);
+        } else {
+            this.prepareFieldsAndForm();
+        }
+    }
+
+    async fetchRecordTypeMetadata(name: string) {
         this.loading = true;
-
         try {
-            const res = await firstValueFrom(this.recordtypeService.search(recordTypeName));
+            const res = await firstValueFrom(this.recordtypeService.search(name));
             this.recordType = new RecordType(res);
-
-            this.recordTypeFilterField = this.recordType.filterFields || [];
-            this.recordTypeDisplayField = this.recordType.displayFields || [];
-            console.log('recordtypeService.search result : ', this.recordType);
-            console.log('recordtype display field : ', this.recordTypeDisplayField.map(r => r.name));
-            this.buildSearchFormControl();
+            console.log('fetchRecordTypeMetadata', this.recordType);
+            this.prepareFieldsAndForm();
         } catch (err: any) {
             console.error('search data failed', err);
             this.messageService.add({
@@ -106,6 +129,27 @@ export class RecordTypeComponent implements OnInit {
         }
     }
 
+    prepareFieldsAndForm() {
+        this.recordTypeFilterField = this.recordType?.filterFields || [];
+        this.recordTypeDisplayField = this.recordType?.displayFields || [];
+        this.buildSearchFormControl();
+    }
+
+    ngEditData(item : RecordType) {
+        const recordTypeName = this.recordType?.name || '';
+        const cacheRecordTypeForm = { [recordTypeName]: this.recordType };
+        const cacheRecordTypeSearchForm = { [recordTypeName]: this.cacheSearchForm };
+        const cacheRecordTypeResult = { [recordTypeName]: this.resultItemList };
+        const fullPath = `/${appProperties.rootPath}/recordtype/form/${recordTypeName}/${item.name}/${item.id}`;
+        console.log('ngEditData', fullPath);
+        void this.router.navigate([fullPath], { state: { recordTypeForm: this.recordType
+                , recordTypeItem: item
+                , cacheRecordTypeForm : cacheRecordTypeForm
+                , cacheRecordTypeResult : cacheRecordTypeResult
+                , cacheRecordTypeSearchForm : cacheRecordTypeSearchForm
+        } });
+    }
+
     ngConfirmDelete(recordType : RecordType) {
         this.displayConfirmation = true
         this.itemDelete = recordType;
@@ -115,7 +159,6 @@ export class RecordTypeComponent implements OnInit {
     ngDeleteData() {
         this.displayConfirmation = false;
 
-        // 1. Check null/undefined ให้ชัวร์
         if (!this.itemDelete || !this.itemDelete.id) {
             this.messageService.add({
                 severity: 'error',
@@ -126,55 +169,20 @@ export class RecordTypeComponent implements OnInit {
         }
 
         const id = this.itemDelete.id;
-        this.loading = true;
-
-        /*this.documentService.delete(id).subscribe({
-            next: (res) => {
-                console.log('delete', res);
-                this.loading = false;
-                this.documentList = this.documentList.filter(doc => doc.id !== id);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Document deleted successfully'
-                });
-
-                this.itemDelete = undefined;
-            },
-            error: (err) => {
-                this.loading = false;
-                console.error('delete data failed', err);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: `Error ${err.status}`,
-                    detail: err.message || err.statusText
-                });
-            }
-        });*/
-    }
-
-    ngSearchItemById(id : string) {
-        console.log('Search By Id:', id);
-        this.loading = true;
-        this.recordtypeService.searchById(id).subscribe({
-            next: (res) => {
-                this.loading = false;
-                const documentState = (res.hasOwnProperty('flowDoc')) ? 'flow' : 'form'
-                this.router.navigate([`${documentState}/${res.id}`], {
-                    relativeTo: this.route,
-                    state: { documentForm: res, }
-                }).then(() => console.log(`open ${documentState} document`));
-                console.log('search result : ', res);
-            },
-            error: (err) => {
-                this.loading = false;
-                console.error('search data failed', err);
-                this.messageService.add({ severity: 'error', summary: `Error ${err.status}`, detail: err.statusText });
-            }
-        });
+        console.log(id);
     }
 
     ngSearch() {
+        const recordTypeName = this.recordType?.name || '';
+        if (!recordTypeName) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error Message',
+                detail: 'RecordType Not Found'
+            });
+            return;
+        }
+
         const searchForm : UntypedFormGroup = this.searchForm;
         this.isValidateFailed = searchForm.invalid;
         if (this.isValidateFailed) {
@@ -186,15 +194,16 @@ export class RecordTypeComponent implements OnInit {
             return;
         }
 
+        this.cacheSearchForm = { ...searchForm.value };
         const criteria = this.recordtypeService.prepareSearchCriteria({ ...searchForm.value }, this.recordTypeFilterField);
         console.log('Search Criteria:', criteria);
         this.loading = true;
-        this.recordtypeService.getData(this.recordType.name, criteria).subscribe({
+        this.recordtypeService.getData(recordTypeName, criteria).subscribe({
             next: (res) => {
                 this.loading = false;
-                this.itemList = res;
-                console.log('search result : ', this.itemList);
-                if (this.itemList.length === 0) {
+                this.resultItemList = res;
+                console.log('search result : ', this.resultItemList);
+                if (this.resultItemList.length === 0) {
                     this.messageService.add({ severity: 'info', summary: 'Info', detail: 'No data found' });
                 }
             },
@@ -207,9 +216,24 @@ export class RecordTypeComponent implements OnInit {
     }
 
     ngReload() {
+        const recordTypeName = this.recordType?.name || '';
+        if (!recordTypeName) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error Message',
+                detail: 'RecordType Not Found'
+            });
+            return;
+        }
+
         this.loading = true;
-        this.recordtypeService.reload(this.recordType.name).subscribe({
-            next: (res) => {
+        this.recordtypeService.reload(recordTypeName).subscribe({
+            next: async (res) => {
+                history.replaceState({}, document.title);
+                this.recordType = undefined;
+                this.resultItemList = [];
+                await this.ngOnInit();
+
                 this.loading = false;
                 console.log('reload result : ', res);
             },
@@ -244,13 +268,13 @@ export class RecordTypeComponent implements OnInit {
             .forEach(field => {
                 const fldName = field.name;
                 const required = field.isRequired;
-                const defaultValue = this.resolveDefaultValue(field);
+                const defaultValue = (this.cacheSearchForm as any)?.[fldName] || this.resolveDefaultValue(field);
                 const validators = required ? [Validators.required] : [];
-                console.log('addControl', {
+                /*console.log('addControl', {
                     fldName: fldName,
                     rawVal: field.filterVal,
                     resolvedVal: defaultValue
-                });
+                });*/
 
                 this.searchForm.addControl(
                     fldName,

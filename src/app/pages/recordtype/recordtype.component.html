@@ -28,7 +28,7 @@
                                     [showTime]="false"
                                     [showIcon]="true"
                                     [iconDisplay]="'input'"
-                                    [dateFormat]="appProperties?.inputDateFormat ?? 'yy-mm-dd'"
+                                    [dateFormat]="appProperties.inputDateFormat"
                                     hourFormat="24"
                                     [showButtonBar]="true"
                                     appendTo="body">
@@ -80,9 +80,9 @@
 </p-fluid>
 
 <p-fluid>
-    <div class="card mt-4" *ngIf="itemList.length > 0">
+    <div class="card mt-4" *ngIf="resultItemList.length > 0">
         <p-table
-                [value]="itemList"
+                [value]="resultItemList"
                 [paginator]="true"
                 [rows]="10"
                 [loading]="loading"
@@ -108,8 +108,8 @@
                     <td class="w-32">
                         <div class="flex gap-2 items-center justify-center">
                             <span class="min-w-4 font-medium">{{ i + 1 }}</span>
-                            <div class="flex border-l pl-2 ml-2" *ngIf="['SS', 'F'].includes(recordType.entityType!)">
-                                <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info" (click)="ngSearchItemById(item.id)"></p-button>
+                            <div class="flex border-l pl-2 ml-2" *ngIf="['SS', 'F'].includes(recordType?.entityType!)">
+                                <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info" (click)="ngEditData(item)"></p-button>
                                 <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="warn" (click)="ngConfirmDelete(item)"></p-button>
                             </div>
                         </div>

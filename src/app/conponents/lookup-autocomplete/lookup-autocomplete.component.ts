@@ -38,6 +38,7 @@ interface autoCompleteItem {
                             [dropdown]="true"
                             dropdownIcon="pi pi-search"
                             [style]="{'width': '100%'}"
+                            [showClear]="true"
                             [inputStyle]="{'width': '100%'}"
                             [inputStyleClass]="isValidateFailed ? 'ng-invalid ng-dirty' : ''"
                             [placeholder]="isLoading ? 'Loading...' : 'Search'">

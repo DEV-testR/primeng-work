@@ -19,7 +19,7 @@ import {LayoutService} from '../service/layout.service';
                 <div class="layout-main">
                     <router-outlet/>
                 </div>
-                <app-footer></app-footer>
+                <!--<app-footer></app-footer>-->
             </div>
             <div class="layout-mask animate-fadein"></div>
         </div> `
