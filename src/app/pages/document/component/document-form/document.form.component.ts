@@ -13,7 +13,7 @@ import {DocumentService} from "../../../../services/document.service";
 import {ToastMessagesComponent} from "../../../../conponents/toast-messages/toast-messages.component";
 import {MenuItem, MessageService} from "primeng/api";
 import {TableModule} from "primeng/table";
-import {Location, NgIf} from "@angular/common";
+import {NgIf} from "@angular/common";
 import {ActivatedRoute, Router} from "@angular/router";
 import {DatePicker} from "primeng/datepicker";
 import {LookupAutocompleteComponent} from "../../../../conponents/lookup-autocomplete/lookup-autocomplete.component";
@@ -22,7 +22,7 @@ import {appProperties} from "../../../../../app.properties";
 import {FilesUploadComponent} from "../../../../conponents/files-upload/files-upload.component";
 
 @Component({
-    selector: 'app-document',
+    selector: 'app-document-form',
     templateUrl: './document.form.component.html',
     imports: [
         Button,
@@ -54,7 +54,6 @@ export class DocumentFormComponent implements OnInit {
         private documentService: DocumentService,
         private router: Router,
         private route: ActivatedRoute,
-        private location: Location
     ) {
         this.requestForm = fb.group({});
     }

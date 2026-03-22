@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpEvent, HttpRequest} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {appProperties} from "../../app.properties";
-import {DocumentCriteria, DocumentData} from "../models/document.model";
+import {DocumentCriteria} from "../models/document.model";
 import {environment} from "../../environments/environment";
 
 @Injectable({
