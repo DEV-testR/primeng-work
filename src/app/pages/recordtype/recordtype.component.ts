@@ -31,6 +31,7 @@ import {Tooltip} from "primeng/tooltip";
 import {DatePicker} from "primeng/datepicker";
 import {Panel} from "primeng/panel";
 import {Select} from "primeng/select";
+import {DynamicInputComponent} from "../../conponents/dynamic-input-component/dynamic-input.component";
 
 @Component({
     selector: 'app-recordtype',
@@ -57,6 +58,7 @@ import {Select} from "primeng/select";
         DatePicker,
         Panel,
         Select,
+        DynamicInputComponent,
     ],
     styleUrls: ['./recordtype.component.scss'],
     providers: [RecordTypeService, MessageService]

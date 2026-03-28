@@ -316,7 +316,14 @@ export class RecordTypeField extends GenericPersistentObject {
         const isRequired = this.isRequired || false;
         const validators = isRequired ? [Validators.required] : [];
 
-        const rawValue = item ? (item as any)[fldName] : null;
+        if (!item) {
+            return new UntypedFormControl(null, {
+                validators: validators,
+                nonNullable: isRequired
+            });
+        }
+
+        const rawValue = item[fldName] || null;
         if (this.dataType === 'RECORDLIST') {
             return new UntypedFormControl(rawValue ? structuredClone(rawValue) : [],{
                 validators,
@@ -325,6 +332,15 @@ export class RecordTypeField extends GenericPersistentObject {
         }
 
         let finalValue = rawValue;
+        if (this.dataType === 'RECORD' && rawValue) {
+            finalValue = {
+                id : rawValue,
+                code : item[`${fldName}Code`] || item[`${fldName}Name`],
+                name : item[`${fldName}Name`] || item[`${fldName}Code`],
+            }
+        }
+
+
         if (this.dataType === 'SELECTINT' && rawValue) {
             finalValue = (rawValue !== '')
                 ? parseInt(String(rawValue), 10)

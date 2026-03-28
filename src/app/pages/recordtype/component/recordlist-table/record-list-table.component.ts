@@ -37,6 +37,7 @@ import {Password} from "primeng/password";
 import {Textarea} from "primeng/textarea";
 import {appProperties} from "../../../../../app.properties";
 import {Select} from "primeng/select";
+import {DynamicInputComponent} from "../../../../conponents/dynamic-input-component/dynamic-input.component";
 
 @Component({
     selector: 'app-record-list-table',
@@ -56,7 +57,8 @@ import {Select} from "primeng/select";
         MultiSelect,
         Password,
         Textarea,
-        Select
+        Select,
+        DynamicInputComponent
     ],
     templateUrl: './record-list-table.component.html',
     providers: [

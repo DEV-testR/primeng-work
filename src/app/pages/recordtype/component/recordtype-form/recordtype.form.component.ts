@@ -30,6 +30,7 @@ import {Textarea} from "primeng/textarea";
 import {NgIf} from "@angular/common";
 import {RecordListTableComponent} from "../recordlist-table/record-list-table.component";
 import {Select} from "primeng/select";
+import {DynamicInputComponent} from "../../../../conponents/dynamic-input-component/dynamic-input.component";
 
 @Component({
     selector: 'app-recordtype-form',
@@ -54,6 +55,7 @@ import {Select} from "primeng/select";
         NgIf,
         RecordListTableComponent,
         Select,
+        DynamicInputComponent,
     ],
     providers: [RecordTypeService, MessageService]
 })

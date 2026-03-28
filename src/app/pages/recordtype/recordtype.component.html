@@ -22,69 +22,11 @@
                         <div class="grid grid-cols-12">
                             <label class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">{{field.label || field.name}}</label>
                             <div class="col-span-12 md:col-span-4">
-                                @switch (field.dataType) {
-                                    @case ('CHECKBOX') {
-                                        <p-checkbox [formControlName]="field.name!" [binary]="true"></p-checkbox>
-                                    }
-                                    @case ('MULTISELECT') { <p-multiSelect [formControlName]="field.name!" [options]="field.optionsSelect" placeholder="Select..."></p-multiSelect> }
-                                    @case ('DATE') {
-                                        <p-datepicker
-                                                [formControlName]="field.name!"
-                                                [showTime]="false"
-                                                [showIcon]="true"
-                                                [iconDisplay]="'input'"
-                                                [dateFormat]="appProperties.inputDateFormat"
-                                                hourFormat="24"
-                                                [showButtonBar]="true"
-                                                appendTo="body">
-                                        </p-datepicker>
-                                    }
-                                    @case ('DATETIME') { <p-calendar [formControlName]="field.name!" [showTime]="true"></p-calendar> }
-                                    @case ('TIMESTAMP') { <p-calendar [formControlName]="field.name!" [showTime]="true"></p-calendar> }
-                                    @case ('TIME') { <p-calendar [formControlName]="field.name!" [showTime]="true" [timeOnly]="true"></p-calendar> }
-                                    @case ('YEAR') { <p-calendar [formControlName]="field.name!" view="year" dateFormat="yy"></p-calendar> }
-                                    @case ('YEARMONTH') { <p-calendar [formControlName]="field.name!" view="month" dateFormat="mm/yy"></p-calendar> }
-                                    @case ('INTEGER') { <p-inputNumber [formControlName]="field.name!" [useGrouping]="false"></p-inputNumber> }
-                                    @case ('LONG') { <p-inputNumber [formControlName]="field.name!" [useGrouping]="false"></p-inputNumber> }
-                                    @case ('DECIMAL') { <p-inputNumber [formControlName]="field.name!" [useGrouping]="true"></p-inputNumber> }
-                                    @case ('COLNO') { <p-inputNumber [formControlName]="field.name!" [useGrouping]="false"></p-inputNumber> }
-                                    @case ('TEXTAREA') { <textarea pInputTextarea [formControlName]="field.name!" class="w-full"></textarea> }
-                                    @case ('RICHTEXT') { <textarea pInputTextarea [formControlName]="field.name!" class="w-full"></textarea> }
-                                    @case ('SECRET') { <p-password [formControlName]="field.name!" [feedback]="false" [toggleMask]="true"></p-password> }
-                                    @default {
-                                        @if ('RECORD' === (field.dataType) && field.relateRecordTypeName) {
-                                            <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="field.relateRecordTypeName" [formControlName]="field.name!"/>
-                                        }
-                                        @else if (['SELECT', 'SELECTINT'].includes(field.dataType!)) {
-                                            <!--<p-dropdown
-                                                    [formControlName]="field.name!"
-                                                    [options]="field.optionsSelect"
-                                                    optionLabel="label"
-                                                    optionValue="value"
-                                                    placeholder="Select..."
-                                                    [showClear]="true"
-                                                    styleClass="w-full">
-                                            </p-dropdown>-->
-                                            <p-select
-                                                    [formControlName]="field.name!"
-                                                    [options]="field.optionsSelect"
-                                                    optionLabel="label"
-                                                    optionValue="value"
-                                                    placeholder="Select..."
-                                                    [showClear]="true"
-                                                    [appendTo]="'body'"
-                                                    styleClass="w-full">
-                                            </p-select>
-                                        }
-                                        @else {
-                                            <input class="form-control"
-                                                   [formControlName]="field.name!"
-                                                   [placeholder]="`Type ${field.name} ...`"
-                                                   pInputText
-                                                   [type]="field.dataType === 'EMAIL' ? 'email' : 'text'"/>
-                                        }
-                                    }
-                                }
+                                <app-dynamic-input
+                                        [field]="field"
+                                        [appProperties]="appProperties"
+                                        [formControlName]="field.name!">
+                                </app-dynamic-input>
                             </div>
                         </div>
                     }

@@ -37,6 +37,7 @@ interface autoCompleteItem {
                             optionLabel="label"
                             [dropdown]="true"
                             dropdownIcon="pi pi-search"
+                            appendTo="body"
                             [style]="{'width': '100%'}"
                             [showClear]="true"
                             [inputStyle]="{'width': '100%'}"
@@ -52,7 +53,7 @@ interface autoCompleteItem {
 })
 
 export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit {
-    @Input() clazzName: string = '';
+    @Input() recordTypeName: string = '';
     @Input() isValidateFailed: boolean | undefined;
     @Output() onSelect = new EventEmitter<any>();
     @ViewChild(AutoComplete) autoComplete!: AutoComplete;
@@ -62,7 +63,7 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     selectedItem: autoCompleteItem | undefined;
     disabled: boolean = false;
     isLoading: boolean = false;
-    private pendingValue: any;
+    // private pendingValue: any;
     private isSelecting = false;
 
     onChange: any = () => {};
@@ -71,7 +72,7 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     constructor(private lookupService: LookupService) {}
 
     ngOnInit(): void {
-        console.log('LookupAutocompleteComponent ngOnInit', this.clazzName);
+        console.log('LookupAutocompleteComponent ngOnInit', this.recordTypeName);
     }
 
     setDisabledState(isDisabled: boolean): void {
@@ -79,13 +80,13 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
     }
 
     private async loadLookupData(): Promise<void> {
-        if (!this.clazzName || this.isLoading) return;
+        if (!this.recordTypeName || this.isLoading) return;
         const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
         try {
             this.isLoading = true;
-            console.log('loadLookupData: Fetching lookup data for', this.clazzName);
-            const resPromise = firstValueFrom(this.lookupService.fetchDataLookup(this.clazzName));
+            console.log('loadLookupData: Fetching lookup data for', this.recordTypeName);
+            const resPromise = firstValueFrom(this.lookupService.fetchDataLookup(this.recordTypeName));
             const [res] = await Promise.all([
                 resPromise,
                 delay(700)
@@ -98,9 +99,9 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
                     name: item.name,
                 }));
 
-                if (this.pendingValue) {
-                    this.writeValue(this.pendingValue);
-                }
+                /*if (this.pendingValue) {
+                    await this.writeValue(this.pendingValue);
+                }*/
             }
         } catch (err) {
             console.error('loadLookupData: Error loading lookup data:', err);
@@ -109,17 +110,24 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
         }
     }
 
-    writeValue(val: any): void {
+    async writeValue(val: any): Promise<void>  {
         if (!val) {
             this.selectedItem = undefined;
-            this.pendingValue = null;
+            // this.pendingValue = null;
             return;
         }
 
         if (this.sourceItems.length === 0) {
-            this.pendingValue = val;
+            // this.pendingValue = val;
             this.selectedItem = undefined;
-            return;
+
+            const responses = await firstValueFrom(this.lookupService.fetchDataLookup(this.recordTypeName));
+            this.sourceItems = responses.map(item => ({
+                id: item.id,
+                code: item.code,
+                name: item.name,
+            }));
+            // return;
         }
 
         const targetId: string = val.id ? val.id : val;
@@ -130,18 +138,18 @@ export class LookupAutocompleteComponent implements ControlValueAccessor, OnInit
                 label: `${foundItem.code} : ${foundItem.name}`,
                 value: foundItem.id
             };
-            this.pendingValue = null;
+            // this.pendingValue = null;
         } else {
             this.selectedItem = undefined;
         }
     }
 
-    onItemSelect(event: any) {
+    async onItemSelect(event: any): Promise<void> {
         console.log('onItemSelect', event);
         this.isSelecting = true;
         const selected = event.value;
         const value : string = selected.value;
-        this.writeValue(value);
+        await this.writeValue(value);
 
         const outValue = this.sourceItems.find(item => item.id === value);
         this.onChange(outValue);

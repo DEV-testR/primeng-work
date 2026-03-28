@@ -7,7 +7,7 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Employee *</label>
             <div class="col-span-12 md:col-span-6">
-                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Employee'" formControlName="emId"/>
+                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [recordTypeName]="'Employee'" formControlName="emId"/>
             </div>
         </div>
 
@@ -44,7 +44,7 @@
         <div class="grid grid-cols-12 gap-4 items-center">
             <label class="col-span-12 md:col-span-2 font-medium">Reason *</label>
             <div class="col-span-12 md:col-span-6">
-                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [clazzName]="'Reason'" formControlName="reasonId"/>
+                <app-lookup-autocomplete [isValidateFailed]="isValidateFailed" [recordTypeName]="'Reason'" formControlName="reasonId"/>
             </div>
         </div>
 

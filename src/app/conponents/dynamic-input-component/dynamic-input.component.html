@@ -1,0 +1,240 @@
+@switch (field.dataType!) {
+    @case ('CHECKBOX') {
+        <p-checkbox [(ngModel)]="value" (ngModelChange)="handleValueChange($event); closeCell()"
+                    [binary]="true" [disabled]="disabled"></p-checkbox>
+    }
+
+    @case ('MULTISELECT') {
+        <p-multiSelect [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                       [options]="field.optionsSelect" [appendTo]="'body'"
+                       (onPanelHide)="closeCell()" placeholder="Select..." class="w-full"></p-multiSelect>
+    }
+
+    @case ('DATE') {
+        <p-datepicker [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                      [showIcon]="true" [dateFormat]="appProperties?.inputDateFormat"
+                      (onSelect)="closeCell()" (onClose)="closeCell()"
+                      [appendTo]="'body'" class="w-full"></p-datepicker>
+    }
+
+    @case ('DATETIME') {
+        <p-datepicker [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                      [showTime]="true" hourFormat="24" (onSelect)="closeCell()"
+                      (onClose)="closeCell()" [appendTo]="'body'" class="w-full"></p-datepicker>
+    }
+
+    @case ('TIMESTAMP') {
+        <p-datepicker [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                      [showTime]="true" hourFormat="24" (onSelect)="closeCell()"
+                      (onClose)="closeCell()" [appendTo]="'body'" class="w-full"></p-datepicker>
+    }
+
+    @case ('TIME') {
+        <p-datepicker [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                      [timeOnly]="true" [showTime]="true" hourFormat="24"
+                      (onSelect)="closeCell()" [appendTo]="'body'" class="w-full"></p-datepicker>
+    }
+
+    @case ('YEAR') {
+        <p-datepicker [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                      view="year" dateFormat="yy" (onSelect)="closeCell()"
+                      [appendTo]="'body'" class="w-full"></p-datepicker>
+    }
+
+    @case ('YEARMONTH') {
+        <p-datepicker [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                      view="month" dateFormat="mm/yy" (onSelect)="closeCell()"
+                      [appendTo]="'body'" class="w-full"></p-datepicker>
+    }
+
+    @case ('INTEGER') {
+        <p-inputNumber [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                       [useGrouping]="false" (onKeyDown)="$event.key === 'Enter' ? closeCell() : null"
+                       class="w-full"></p-inputNumber>
+
+    }
+
+    @case ('LONG') {
+        <p-inputNumber [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                       [useGrouping]="false" (onKeyDown)="$event.key === 'Enter' ? closeCell() : null"
+                       class="w-full"></p-inputNumber>
+    }
+
+    @case ('COLNO') {
+        <p-inputNumber [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                       [useGrouping]="false" (onKeyDown)="$event.key === 'Enter' ? closeCell() : null"
+                       class="w-full"></p-inputNumber>
+    }
+
+    @case ('DECIMAL') {
+        <p-inputNumber [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                       [useGrouping]="true" (onKeyDown)="$event.key === 'Enter' ? closeCell() : null"
+                       class="w-full"></p-inputNumber>
+    }
+
+    @case ('TEXTAREA') {
+        <textarea pInputTextarea [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                  [rows]="5" (keydown.enter)="handleTextareaEnter($event)" class="w-full"></textarea>
+    }
+
+    @case ('RICHTEXT') {
+        <textarea pInputTextarea [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                  [rows]="5" (keydown.enter)="handleTextareaEnter($event)" class="w-full"></textarea>
+    }
+
+    @case ('SECRET') {
+        <p-password [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                    [feedback]="false" [toggleMask]="true" (keydown.enter)="closeCell()"
+                    styleClass="w-full" [style]="{'width':'100%'}"></p-password>
+    }
+
+    @default {
+        @if (['SELECT', 'SELECTINT'].includes(field.dataType!)) {
+            <p-select [(ngModel)]="value" (ngModelChange)="handleValueChange($event); closeCell()"
+                      [options]="field.optionsSelect" optionLabel="label" optionValue="value"
+                      placeholder="Select..." [showClear]="true" [appendTo]="'body'" styleClass="w-full">
+            </p-select>
+        }
+        @else if ('RECORD' === (field.dataType) && field.relateRecordTypeName) {
+            <!--<app-lookup-autocomplete
+                    [isValidateFailed]="isValidateFailed"
+                    [recordTypeName]="field.relateRecordTypeName"
+                    [formControlName]="field.name!"/>-->
+            <app-lookup-autocomplete [(ngModel)]="value"
+                                     (ngModelChange)="handleValueChange($event)"
+                                     [isValidateFailed]="isValidateFailed"
+                                     [recordTypeName]="field.relateRecordTypeName"
+                                     (onSelect)="closeCell()"
+                                     class="w-full"/>
+        }
+        @else {
+            <input pInputText [(ngModel)]="value" (ngModelChange)="handleValueChange($event)"
+                   (keydown.enter)="closeCell()" class="w-full"
+                   [placeholder]="'Type ' + (field.label || field.name) + '...'"
+                   [type]="field.dataType === 'EMAIL' ? 'email' : 'text'"/>
+        }
+    }
+}
+
+
+<!--@switch (dataType) {
+                                                            @case ('CHECKBOX') {
+                                                                <p-checkbox [formControlName]="field.name!"
+                                                                            [binary]="true"></p-checkbox>
+                                                            }
+                                                            @case ('MULTISELECT') {
+                                                                <p-multiSelect [formControlName]="field.name!"
+                                                                               [options]="field.optionsSelect"
+                                                                               placeholder="Select..."></p-multiSelect>
+                                                            }
+                                                            @case ('DATE') {
+                                                                <p-datepicker
+                                                                        [formControlName]="field.name!"
+                                                                        [showTime]="false"
+                                                                        [showIcon]="true"
+                                                                        [iconDisplay]="'input'"
+                                                                        [dateFormat]="appProperties.inputDateFormat"
+                                                                        hourFormat="24"
+                                                                        [showButtonBar]="true"
+                                                                        appendTo="body">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('DATETIME') {
+                                                                <p-datepicker [formControlName]="field.name!"
+                                                                              [showTime]="true"
+                                                                              hourFormat="24"
+                                                                              [appendTo]="'body'">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('TIMESTAMP') {
+                                                                <p-datepicker [formControlName]="field.name!"
+                                                                              [showTime]="true"
+                                                                              hourFormat="24"
+                                                                              [appendTo]="'body'">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('TIME') {
+                                                                <p-datepicker [formControlName]="field.name!"
+                                                                              [showTime]="true"
+                                                                              [timeOnly]="true"
+                                                                              hourFormat="24"
+                                                                              [appendTo]="'body'">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('YEAR') {
+                                                                <p-datepicker [formControlName]="field.name!"
+                                                                              view="year"
+                                                                              dateFormat="yy"
+                                                                              [appendTo]="'body'">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('YEARMONTH') {
+                                                                <p-datepicker [formControlName]="field.name!"
+                                                                              view="month"
+                                                                              dateFormat="mm/yy"
+                                                                              [appendTo]="'body'">
+                                                                </p-datepicker>
+                                                            }
+                                                            @case ('INTEGER') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="false"></p-inputNumber>
+                                                            }
+                                                            @case ('LONG') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="false"></p-inputNumber>
+                                                            }
+                                                            @case ('DECIMAL') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="true"></p-inputNumber>
+                                                            }
+                                                            @case ('COLNO') {
+                                                                <p-inputNumber [formControlName]="field.name!"
+                                                                               [useGrouping]="false"></p-inputNumber>
+                                                            }
+                                                            @case ('TEXTAREA') {
+                                                                <textarea pInputTextarea [formControlName]="field.name!" [name]="field.name!"
+                                                                          [rows]="5"
+                                                                          class="w-full"></textarea>
+                                                            }
+                                                            @case ('RICHTEXT') {
+                                                                <textarea pInputTextarea [formControlName]="field.name!" [name]="field.name!"
+                                                                          [rows]="5"
+                                                                          class="w-full"></textarea>
+                                                            }
+                                                            @case ('SECRET') {
+                                                                <p-password [formControlName]="field.name!"
+                                                                            [feedback]="false"
+                                                                            [toggleMask]="true"></p-password>
+                                                            }
+                                                            @default {
+                                                                @if ('RECORD' === (field.dataType) && field.relateRecordTypeName) {
+                                                                    <app-lookup-autocomplete
+                                                                            [isValidateFailed]="isValidateFailed"
+                                                                            [clazzName]="field.relateRecordTypeName"
+                                                                            [formControlName]="field.name!"/>
+                                                                }
+                                                                @else if ('RECORDLIST' === (field.dataType) && field.relateRecordTypeName) {
+                                                                    <app-record-list-table
+                                                                            [relateRecordTypeName]="field.relateRecordTypeName!"
+                                                                            [formControlName]="field.name!">
+                                                                    </app-record-list-table>
+                                                                }
+                                                                @else if (['SELECT', 'SELECTINT'].includes(field.dataType!)) {
+                                                                    <p-select
+                                                                            [formControlName]="field.name!"
+                                                                            [options]="field.optionsSelect"
+                                                                            optionLabel="label"
+                                                                            optionValue="value"
+                                                                            placeholder="Select..."
+                                                                            [showClear]="true"
+                                                                            [appendTo]="'body'"
+                                                                            styleClass="w-full">
+                                                                    </p-select>
+                                                                } @else {
+                                                                    <input class="form-control"
+                                                                           [formControlName]="field.name!"
+                                                                           pInputText
+                                                                           [type]="field.dataType === 'EMAIL' ? 'email' : 'text'"/>
+                                                                }
+                                                            }
+                                                        }-->
