@@ -1,13 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Button} from "primeng/button";
-import {
-    FormsModule,
-    ReactiveFormsModule, UntypedFormArray,
-    UntypedFormBuilder,
-    UntypedFormControl,
-    UntypedFormGroup,
-    Validators
-} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Fluid} from "primeng/fluid";
 import {RecordTypeService} from "../../../../services/recordtype.service";
 import {ToastMessagesComponent} from "../../../../conponents/toast-messages/toast-messages.component";
@@ -17,19 +10,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {appProperties} from "../../../../../app.properties";
 import {FormSection, RecordType, RecordTypeField, SectionData} from "../../../../models/recordtype.model";
 import {firstValueFrom} from "rxjs";
-import {Calendar} from "primeng/calendar";
-import {Checkbox} from "primeng/checkbox";
-import {DatePicker} from "primeng/datepicker";
 import {DropdownModule} from "primeng/dropdown";
-import {InputNumber} from "primeng/inputnumber";
-import {InputText} from "primeng/inputtext";
-import {LookupAutocompleteComponent} from "../../../../conponents/lookup-autocomplete/lookup-autocomplete.component";
-import {MultiSelect} from "primeng/multiselect";
-import {Password} from "primeng/password";
-import {Textarea} from "primeng/textarea";
 import {NgIf} from "@angular/common";
 import {RecordListTableComponent} from "../recordlist-table/record-list-table.component";
-import {Select} from "primeng/select";
 import {DynamicInputComponent} from "../../../../conponents/dynamic-input-component/dynamic-input.component";
 
 @Component({
@@ -42,19 +25,9 @@ import {DynamicInputComponent} from "../../../../conponents/dynamic-input-compon
         ReactiveFormsModule,
         ToastMessagesComponent,
         TableModule,
-        Calendar,
-        Checkbox,
-        DatePicker,
         DropdownModule,
-        InputNumber,
-        InputText,
-        LookupAutocompleteComponent,
-        MultiSelect,
-        Password,
-        Textarea,
         NgIf,
         RecordListTableComponent,
-        Select,
         DynamicInputComponent,
     ],
     providers: [RecordTypeService, MessageService]
@@ -166,7 +139,13 @@ export class RecordTypeFormComponent implements OnInit {
     }
 
     pageBack() {
-        const recordTypeName = this.recordTypeForm?.name;
+        this.ngOpenRecordTypeForm(this.recordTypeForm?.name || '', { cacheRecordTypeForm: this.cacheParentItem?.['cacheRecordTypeForm']
+            , cacheRecordTypeResult: this.cacheParentItem?.['cacheRecordTypeResult']
+            , cacheRecordTypeSearchForm : this.cacheParentItem?.['cacheRecordTypeSearchForm']
+        })
+    }
+
+    ngOpenRecordTypeForm(recordTypeName : string, state :any):void {
         if (!recordTypeName) {
             console.warn('recordTypeForm.name is missing, fallback to relative navigation');
             void this.router.navigate(['../../'], { relativeTo: this.route });
@@ -174,14 +153,8 @@ export class RecordTypeFormComponent implements OnInit {
         }
 
         const fullPath = `/${appProperties.rootPath}/recordtype/${recordTypeName}`;
-        const navigationState = {
-            state: { cacheRecordTypeForm: this.cacheParentItem?.['cacheRecordTypeForm']
-                , cacheRecordTypeResult: this.cacheParentItem?.['cacheRecordTypeResult']
-                , cacheRecordTypeSearchForm : this.cacheParentItem?.['cacheRecordTypeSearchForm']
-            }
-        };
-
-        console.log('pageBack navigating to:', fullPath, navigationState);
+        const navigationState = { state: state };
+        console.log('navigating to:', fullPath, navigationState);
         void this.router.navigate([fullPath], navigationState);
     }
 

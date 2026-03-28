@@ -3,9 +3,18 @@
     <div class="flex flex-grow flex-col justify-between gap-3 min-h-[calc(100dvh-8rem)]">
         <div class="flex flex-col gap-5">
             <p-fluid [formGroup]="formGroup">
+
                 <div class="card flex flex-col gap-6 p-6 max-h-[calc(94dvh-8rem)] overflow-y-auto">
                     <!--<p-breadcrumb [model]="items" [home]="home" />-->
-                    <h2 class="text-xl font-bold mb-4">{{recordTypeItem?.label || recordTypeItem?.name}}</h2>
+                    <!--<h2 class="text-xl font-bold mb-4" (click)="ngOpenRecordTypeForm(recordTypeItem?.name || '', {})">
+                        {{recordTypeItem?.label || recordTypeItem?.name}}
+                    </h2>-->
+                    <div class="flex justify-start">
+                        <span class="cursor-pointer text-xl font-bold p-button-link" (click)="ngOpenRecordTypeForm(recordTypeItem?.name || '', {})">
+                            {{recordTypeItem?.label || recordTypeItem?.name}}
+                        </span>
+                    </div>
+
                         @for (section of groupedSectionFields1; track section.label) {
                             <div class="flex flex-col gap-5 p-4">
                                 <div class="font-semibold text-xl border-b pb-2">{{ section.label }}</div>
@@ -57,7 +66,7 @@
                 </div>
             </p-fluid>
         </div>
-        <div class="flex justify-between gap-2 bg-[var(--surface-card)] rounded-[var(--content-border-radius)] shadow-md p-2">
+        <div class="flex justify-start gap-3 bg-[var(--surface-card)] rounded-[var(--content-border-radius)] shadow-md p-2">
             <div class="flex flex-row gap-2">
                 <p-button label="Save" (onClick)="ngSave()" [loading]="loading"></p-button>
             </div>
